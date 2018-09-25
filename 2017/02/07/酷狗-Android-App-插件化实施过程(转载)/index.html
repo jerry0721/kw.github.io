@@ -1,0 +1,760 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,插件化," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="原文在此 什么是插件化框架插件化框架可以在主程序不重新安装的情况下，针对单个业务模块进行加载达到模块更新的目的，整个加载更新过程，对用户来说也是无感知的。正式因为这样，新需求比起传统更新方式覆盖率和覆盖速度都会更高和更快，对于大型开发团队，各个业务模块开发小组组也不需要再等所有组的需求开发完统一发布版本，发版本可以单独针对小组内单个功能发布了，有了这些优点才使得这1年来插件化框架如此流行的重要原因">
+<meta name="keywords" content="Android,插件化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="酷狗Android App插件化实施过程(转载)">
+<meta property="og:url" content="https://kuwork.github.io/2017/02/07/酷狗-Android-App-插件化实施过程(转载)/index.html">
+<meta property="og:site_name" content="K.W. 时间囊">
+<meta property="og:description" content="原文在此 什么是插件化框架插件化框架可以在主程序不重新安装的情况下，针对单个业务模块进行加载达到模块更新的目的，整个加载更新过程，对用户来说也是无感知的。正式因为这样，新需求比起传统更新方式覆盖率和覆盖速度都会更高和更快，对于大型开发团队，各个业务模块开发小组组也不需要再等所有组的需求开发完统一发布版本，发版本可以单独针对小组内单个功能发布了，有了这些优点才使得这1年来插件化框架如此流行的重要原因">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-790cb15023b056f7.png!web?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-345422740186f2fc.png!web?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-626c18cb11b7bb78.png!web?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-e0433d10b851a6f1.png!web?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-4b738046f6eedc7f.png!web?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-fc2a1c38bb3dc1bb.png!web?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-15677b21b89a4889.png!web?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-51ffa658bb030a4b.png!web?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-6f119a0b55fd5051.png!web?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-09-25T07:16:39.403Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="酷狗Android App插件化实施过程(转载)">
+<meta name="twitter:description" content="原文在此 什么是插件化框架插件化框架可以在主程序不重新安装的情况下，针对单个业务模块进行加载达到模块更新的目的，整个加载更新过程，对用户来说也是无感知的。正式因为这样，新需求比起传统更新方式覆盖率和覆盖速度都会更高和更快，对于大型开发团队，各个业务模块开发小组组也不需要再等所有组的需求开发完统一发布版本，发版本可以单独针对小组内单个功能发布了，有了这些优点才使得这1年来插件化框架如此流行的重要原因">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/3020228-790cb15023b056f7.png!web?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://kuwork.github.io/2017/02/07/酷狗-Android-App-插件化实施过程(转载)/"/>
+
+
+
+
+
+  <title> 酷狗Android App插件化实施过程(转载) | K.W. 时间囊 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">K.W. 时间囊</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">停下来休息的时候,不要忘记别人还在奔跑</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://kuwork.github.io/2017/02/07/酷狗-Android-App-插件化实施过程(转载)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kuwork">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="K.W. 时间囊">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                酷狗Android App插件化实施过程(转载)
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-07T12:04:00+08:00">
+                2017-02-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="https://www.diycode.cc/topics/442" target="_blank" rel="noopener">原文在此</a></p>
+<h2 id="什么是插件化框架"><a href="#什么是插件化框架" class="headerlink" title="什么是插件化框架"></a>什么是插件化框架</h2><p>插件化框架可以在主程序不重新安装的情况下，针对单个业务模块进行加载达到模块更新的目的，整个加载更新过程，对用户来说也是无感知的。<br>正式因为这样，新需求比起传统更新方式覆盖率和覆盖速度都会更高和更快，对于大型开发团队，各个业务模块开发小组组也不需要再等所有组的需求开发完统一发布版本，发版本可以单独针对小组内单个功能发布了，有了这些优点才使得这1年来插件化框架如此流行的重要原因。</p>
+<h2 id="目前网上流行的主流的插件化技术核心主要分两类："><a href="#目前网上流行的主流的插件化技术核心主要分两类：" class="headerlink" title="目前网上流行的主流的插件化技术核心主要分两类："></a>目前网上流行的主流的插件化技术核心主要分两类：</h2><p>一类是360公司开源的DroidPlugin，特点在宿主程序上打造一个纯粹的环境，可以让一个个普通apk（插件）不安装就可以正常使用，并且插件之前资源和代码都是相互独立互相不干扰也不能访问，为了达到这样的目的，框架hook了大量的系统api。<br>另一类是从dynamic-load-apk 开始，通过反射少量api，达到插件代码和资源与宿主合并，达到相互调用的结果，目前大部分都是框架从底层代码合并和资源合并用的手法都差不多，只是各个框架在这基础上对插件化的理解不一样，为各自的项目做了不少的业务封装。</p>
+<h2 id="常用的类加载方法是："><a href="#常用的类加载方法是：" class="headerlink" title="常用的类加载方法是："></a>常用的类加载方法是：</h2><p><img src="http://upload-images.jianshu.io/upload_images/3020228-790cb15023b056f7.png!web?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h2 id="常见的资源加载方式是："><a href="#常见的资源加载方式是：" class="headerlink" title="常见的资源加载方式是："></a>常见的资源加载方式是：</h2><p><img src="http://upload-images.jianshu.io/upload_images/3020228-345422740186f2fc.png!web?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>目前看来怎么加载代码，怎么加载资源、怎么动态声明和启动android组件。网上大部分开源的开源框架都很好的解决了这些怎么实现的问题，很完美的做到了从0到1。但是对于一个有几十个开发人员千万级别的大型的app来说，单解决了这些问题还是不够的。插件框架的稳定性、从原有代码到插件化的迁移成本、后期维护成本等等方面都需要考虑到。<br>所以兼容性、迁移成本、后期维护成本是我们在插件化选型时最基本的考虑因素。<br>首先兼容性、后期维护成本，大家都了解到由于android系统的碎片化，android官方提供的api也存在着不少的兼容性问题，况且针对创新能力如此强大的国内手机厂商，国产手机也额外的多了不少兼容性问题。<br>具体例子：常用到的资源加载方式，放在vivo的部分手机就不能使用原因是其ROM把系统的Resources封装成为了VivoResources直接导致了反射失败插件资源无法加载，同样的Nubia的部分手机也是。所以基于这样在做插件化的时候hook系统的api就应该尽量的少，因为hook的api不确定性太多了，而且在这部分的开发过程肯定不会有任何文档提供参考的，遇到问题就干撸代码吧。<br>处理兼容性的工作量越大其实后期的维护成本就越高，至少如果android一个新版本出来了首先要看的是之前hook的官方api有没有被改掉。如果有问题还要再针对新的版本寻求新的实现，这部分工作量是非常大的。这也是我们不选择DroidPlugin的重要原因，从网上的能找到的所有资料并没有看到DroidPlugin的兼容性能达到多少能适配多少台手机。但是预判一下DroidPlugin hook了大量的api比起其他框架hook两个，这部分后续维护成本也是足够喝一壶的。<br>迁移成本，其实很多大型的项目实现插件化，在这个调整的过程中对代码结构，调用逻辑等等的修改肯定是有的。怎么保证这个改动是最少的，也是我们的考虑之一毕竟有改动就会产生bug,比较幸运的是，我们从打包脚本上下手在保证传统的项目结构和逻辑调用不改变的情况下实现模块插件化。让插件化先跑起来，在实现之后再让各个业务小组针对插件化的建议慢慢的完善和封装插件和宿主之间的协议和约定。</p>
+<h2 id="插件化迁移过程："><a href="#插件化迁移过程：" class="headerlink" title="插件化迁移过程："></a>插件化迁移过程：</h2><p>首先，看看我们酷狗原有的基础项目结构：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-626c18cb11b7bb78.png!web?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>项目底层是一个公用library 提供大部分的公共的基础模块，酷狗作为application作为主程序，其他听看唱其他业务模块也作为一个个library,各个业务组关联公共模块和酷狗主程序，在各自的业务模块下开发、调试。当发版本的时候就统一在打包平台上让酷狗关联所有业务模块 然后统一打包，这是最常见的项目组成架构业务模块有项目级别的代码分离而且业务项目依赖公共基础库。<br>项目优化目标</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-e0433d10b851a6f1.png!web?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>优化后，业务组之前的开发方式完全不变，项目结构对比优化前完整保留，打包之后每个业务模块是一个个插件可以单独加载运行，每个插件都是只包含插件自己的资源和代码（不包含公共库），插件可以正常访问宿主的资源和代码，只要宿主保留了插件所需的资源和代码，无论宿主怎么改变都可以启动插件。<br>在这个过程中主要需要解决的问题有：<br>打包插件只保留插件本身的代码，打包后插件不改变任何调用逻辑能顺利调用回宿主逻辑。<br>决插件和宿主资源冲突问题，插件只保留本身资源，插件能访问到宿主资源。<br>重新编译之后怎么保证旧的宿主能支持新的插件。</p>
+<p>首先怎么把原来跟底层项目依赖的业务模块 单独打成一个插件包 只保留业务模块的代码<br><img src="http://upload-images.jianshu.io/upload_images/3020228-4b738046f6eedc7f.png!web?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br>我们拿听模块做个例子先编译宿主程序也就是酷狗项目和底层基础库，一直编译完javac这时候主项目资源R.java和映射表都可以得到，然后把编译出来的class打包成common.jar把common项目资源复制到一个空壳项目commonres。<br>接着修改听项目的属性把它从一个library变成一个application，关联让它不直接关联基础库，而是让它关联 commonn.jar 和 commonres，其中common.jar做提供编译。<br>按照这样编译下去，听项目编译出来的apk就只包含自己的代码了。<br>接下来解决资源问题,正常的资源查找方式</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-fc2a1c38bb3dc1bb.png!web?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>应用层获取资源 是用资源id直接去获取，Resources先根据我们的id去资源映射表去查找这个资源的名称是，拿到资源名称不对应文件的资源只需要执行从资源ID到资源名称的转换即可，而对应有文件的资源还需要根据资源名称来打开对应的文件。经过反射 resources 里面包含了多个映射表的目录，查找的时候会按照顺序先查宿主再查各个插件的映射表。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-15677b21b89a4889.png!web?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>资源冲突问题因为上面项目结构调整之后，插件和宿主都是application编译时候就会出资源id相同，插件做资源id查找的时候就会有可能查找到宿主的资源，所以只要修改了resources.arsc和代码层用到的R.java的id就可以解决冲突了常见的修改方式是修改插件的id的pp段。</p>
+<p>程序编译到这里，修改关联后的插件项目还保留了一份commonres资源，跟宿主的程序上的是一摸一样的，能不能修改资源id来解决呢，答案是肯定的,因为插件和宿主查找资源的逻辑是一样的，只要插件代码调用中相同的资源id即R.java里面的id,修改为宿主资源id，资源查找的时候就会顺利的到宿主的resources.arsc去查找资源了。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-51ffa658bb030a4b.png!web?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>最后，删除插件resources.arsc多余的资源id和插件多余的资源文件。这样下来 最终得出的插件包 就是只含有插件代码和插件资源的 而且还能随意访问宿主资源和代码。<br>最后我们看看整体的编译流程。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-6f119a0b55fd5051.png!web?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p><strong>与微信资源混淆工具的兼容性问题</strong><br>插件化工具主要在编译时修改ID和去除其他多余资源，资源混淆工具主要是把名称和路径改短不修改ID，所以并不冲突。<br>只要保证读写操作都是严格按照 resources.arsc 的格式去写就可以了。<br>接下来最后一个问题,重新编译之后怎么保证旧的宿主能支持新的插件,简单说就是多程序怎么一起 做代码混淆,怎么保持宿主的资源ID。</p>
+<p><strong> 多项目一起混淆：</strong></p>
+<p>我们选择的是统一做混淆，为什么不能先混淆整体混淆一个项目然后再混淆第二个项目的时候保持用上个项目的mapping 继续混淆,一直这样编译下去？<br>主要因为插件和宿主公共库之间并没有固定接口，单独混淆原来直接关联调用的方法就会被混淆移除掉。<br>我们还记得插件模块和common基础模块本来就是直接关联、直接调用的，后面我们改变项目结构让插件独立出来了，但是这部分调用还是存在的。<br>一旦单独混淆他们之间关联的代码就会被移除掉，宿主公共库的final静态变量混淆后也会消失，插件也没法调用得到。<br>其实正常来说，宿主和插件之间的调用本来就是需要先有固定的接口做好解耦 规范好所有的调用，宿主提供一套完整的api给插件使用，然后混淆的时候 keep好各自边界 。 这样对于后续插件版本更新和管理才是最正确的。<br>为什么这个问题到现在才聊呢，因为让各个业务模块组为了插件化然后去封装接口，等他们解耦封装好才来做的话时间太长了，所以我们先用这种方式让他们不需要做任何封装和解耦就能用，后续再要求他们慢慢的规范好这部分的接口。</p>
+<p><strong> 怎么keep资源问题</strong></p>
+<p>我们知道资源id的生成是按照资源名称随机生成的，一旦添加或者修改了某个资源名称所有的资源id都有可能改变。 如果不能固定资源id 每次编译都id都变的话插件也无法下发给用户使用。<br>解决方案是在编译的时候根据宿主R.java的生成ids.xml和public.xml下次编译把ids.xml和public.xml放到宿主的/res/value目录下编译可保持id不变，这样即使下次宿主的其他资源改变了，只要插件用到的所有资源没有改变，新打出来的插件 一样是可以给旧的宿主使用的。<br>到这里一个完成的插件包已经出来了，剩下的就是 按照基本的加载方式，把这个插件加载进去就顺利完成了。</p>
+<p><strong>最后在宿主实现插件管理功能，这部分纯粹就是基本的业务逻辑了。</strong></p>
+<ol>
+<li>下载校验插件差异包。 （我们生成新的插件包上次到服务器，服务器就会与原始插件做差异对比，然后生成文件级别的差异文件，下发给用户）</li>
+<li>合并差异包对比插件版本号。</li>
+<li>加载前黑名单和白名单检验。（某些插件版本必须强制加载，某些强制不能加载）</li>
+<li>启动时加载插件资源映射表。（保证一启动就可以查询到所以资源，而且这个反射效率很高，不耗时，也不耗内存速度也很快）。</li>
+<li>插件代码选择合适时机懒加载。 （因为加载dex的时候，需要耗时，5.0以下做opt,5.0以上做oat,而且时间还不短，所以需要挑合适的时机做懒加载。）</li>
+</ol>
+<p>最后，本文主要是我们在插件化过程中遇到一些问题的解决方案，其实每个解决方案都会有各自的取舍，也无谁优谁劣，如有更好的方案欢迎下面留言交流。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/插件化/" rel="tag"># 插件化</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/04/Android-Small-源码分析(二)-插件加载过程/" rel="next" title="Android Small 源码分析(二) 插件加载过程">
+                <i class="fa fa-chevron-left"></i> Android Small 源码分析(二) 插件加载过程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/18/基于-RxJava-2-和-RxRelay-实现-RxBus/" rel="prev" title="基于 RxJava 2 和 RxRelay 实现 RxBus">
+                基于 RxJava 2 和 RxRelay 实现 RxBus <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="Kuwork" />
+          <p class="site-author-name" itemprop="name">Kuwork</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是插件化框架"><span class="nav-number">1.</span> <span class="nav-text">什么是插件化框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#目前网上流行的主流的插件化技术核心主要分两类："><span class="nav-number">2.</span> <span class="nav-text">目前网上流行的主流的插件化技术核心主要分两类：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用的类加载方法是："><span class="nav-number">3.</span> <span class="nav-text">常用的类加载方法是：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见的资源加载方式是："><span class="nav-number">4.</span> <span class="nav-text">常见的资源加载方式是：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#插件化迁移过程："><span class="nav-number">5.</span> <span class="nav-text">插件化迁移过程：</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuwork</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

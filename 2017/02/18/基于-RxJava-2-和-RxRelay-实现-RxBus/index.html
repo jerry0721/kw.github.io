@@ -1,0 +1,739 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,Rxjava," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="相信大家都对EventBus这个很热门的工具很熟悉了，最近更新开发新框架的缘故，接触到Retrofit 2 和 RxJava 2 ，自然而然地使用RxBus来代替EventBus。  一辆有意思的BUS“Bus”这个词其实很形象的说明总线这个概念。那什么是总线？ 总线是系统传送信息的公共通信干线，各个部件在总线上传递消息。RxBus实现了一种事件总线，一条公共的通信通道，上面跑着各种信息，And">
+<meta name="keywords" content="Android,Rxjava">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于 RxJava 2 和 RxRelay 实现 RxBus">
+<meta property="og:url" content="https://kuwork.github.io/2017/02/18/基于-RxJava-2-和-RxRelay-实现-RxBus/index.html">
+<meta property="og:site_name" content="K.W. 时间囊">
+<meta property="og:description" content="相信大家都对EventBus这个很热门的工具很熟悉了，最近更新开发新框架的缘故，接触到Retrofit 2 和 RxJava 2 ，自然而然地使用RxBus来代替EventBus。  一辆有意思的BUS“Bus”这个词其实很形象的说明总线这个概念。那什么是总线？ 总线是系统传送信息的公共通信干线，各个部件在总线上传递消息。RxBus实现了一种事件总线，一条公共的通信通道，上面跑着各种信息，And">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-6bb6ca40c2f27039.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-1f5797262a5f9dda.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-09-25T07:40:39.699Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基于 RxJava 2 和 RxRelay 实现 RxBus">
+<meta name="twitter:description" content="相信大家都对EventBus这个很热门的工具很熟悉了，最近更新开发新框架的缘故，接触到Retrofit 2 和 RxJava 2 ，自然而然地使用RxBus来代替EventBus。  一辆有意思的BUS“Bus”这个词其实很形象的说明总线这个概念。那什么是总线？ 总线是系统传送信息的公共通信干线，各个部件在总线上传递消息。RxBus实现了一种事件总线，一条公共的通信通道，上面跑着各种信息，And">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/3020228-6bb6ca40c2f27039.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://kuwork.github.io/2017/02/18/基于-RxJava-2-和-RxRelay-实现-RxBus/"/>
+
+
+
+
+
+  <title> 基于 RxJava 2 和 RxRelay 实现 RxBus | K.W. 时间囊 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">K.W. 时间囊</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">停下来休息的时候,不要忘记别人还在奔跑</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://kuwork.github.io/2017/02/18/基于-RxJava-2-和-RxRelay-实现-RxBus/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kuwork">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="K.W. 时间囊">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                基于 RxJava 2 和 RxRelay 实现 RxBus
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-18T17:35:00+08:00">
+                2017-02-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://upload-images.jianshu.io/upload_images/3020228-6bb6ca40c2f27039.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>相信大家都对EventBus这个很热门的工具很熟悉了，最近更新开发新框架的缘故，接触到Retrofit 2 和 RxJava 2 ，自然而然地使用RxBus来代替EventBus。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-1f5797262a5f9dda.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="RxJava"></p>
+<h1 id="一辆有意思的BUS"><a href="#一辆有意思的BUS" class="headerlink" title="一辆有意思的BUS"></a>一辆有意思的BUS</h1><p>“Bus”这个词其实很形象的说明总线这个概念。那什么是总线？</p>
+<p>总线是系统传送信息的公共通信干线，各个部件在总线上传递消息。RxBus实现了一种事件总线，一条公共的通信通道，上面跑着各种信息，Android中的各个组件或是控件都可以向它发送各种信息，在各个组件或控件中只要订阅这条总线，每当总线收到消息的时候，这些订阅者同样就能收到这些消息。</p>
+<h1 id="RxBus-最基本的实现"><a href="#RxBus-最基本的实现" class="headerlink" title="RxBus 最基本的实现"></a>RxBus 最基本的实现</h1><p>支持注解方式订阅事件。 支持粘滞事件。 支持3种Bus: Publish Bus( RxBus，参见 <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/subjects/PublishSubject.html" target="_blank" rel="noopener">PublishSubject</a> ) Behavior Bus(参见 <a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/subjects/BehaviorSubject.html" target="_blank" rel="noopener">BehaviorSubject</a>) Replay Bus(参见<a href="http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/subjects/ReplaySubject.html" target="_blank" rel="noopener">ReplaySubject</a>)</p>
+<p>这三种都是基于Subject类，它负责在非Rx-Apis之间充当桥梁。但是也存在问题。他没有能力去处理onComplete 或 onError事件.如果在下游发生onError / onComplete ，上游将受到影响。</p>
+<h1 id="ReRelay开源项目"><a href="#ReRelay开源项目" class="headerlink" title="ReRelay开源项目"></a><a href="https://github.com/JakeWharton/RxRelay" target="_blank" rel="noopener">ReRelay</a>开源项目</h1><p><a href="https://github.com/JakeWharton" target="_blank" rel="noopener">JakeWharton</a> 大神已经帮你们处理好这些问题。</p>
+<p>Relays 是既是Observable也是Consumer的<a href="https://github.com/ReactiveX/RxJava/" target="_blank" rel="noopener">RxJava</a> 类型，它同样能够很容易在non-Rx api和 Rx api之间搭起桥梁,而不必要担心下游的触发的终止状态（onComplete 或 onError）。</p>
+<h1 id="RxBus-下载使用"><a href="#RxBus-下载使用" class="headerlink" title="RxBus 下载使用"></a>RxBus 下载使用</h1><p>Maven:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.kw<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>rxbus<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">type</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">type</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>Gradle:</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compile <span class="string">'com.kw:rxbus:1.0.1'</span></span><br></pre></td></tr></table></figure>
+<p>这个库 并不含有 RxAndroid 和 RxJava ，请自行添加</p>
+<h1 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h1><h2 id="发送事件"><a href="#发送事件" class="headerlink" title="发送事件"></a>发送事件</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RxBus.getInstance().send(<span class="keyword">new</span> UserEvent(<span class="number">1</span>,<span class="string">"名字"</span>));</span><br></pre></td></tr></table></figure>
+<h2 id="接受事件"><a href="#接受事件" class="headerlink" title="接受事件"></a>接受事件</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//注册</span></span><br><span class="line">disposable = RxBus.getInstance().register(UserEvent.class, AndroidSchedulers.mainThread(), <span class="keyword">new</span> Consumer&lt;UserEvent&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">accept</span><span class="params">(UserEvent userEvent)</span> </span>&#123;</span><br><span class="line">                btnNext.setText(userEvent.getName());</span><br><span class="line">                Toast.makeText(getBaseContext(), userEvent.toString(), Toast.LENGTH_SHORT).show();</span><br><span class="line">                Log.d(<span class="string">"AActivity"</span>, <span class="string">"onNext:"</span> + Thread.currentThread().getName());</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"空指针错误"</span>);<span class="comment">//发生错误之后，会取消订阅</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, <span class="keyword">new</span> Consumer&lt;Throwable&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">accept</span><span class="params">(Throwable throwable)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                <span class="comment">//发生错误后仅仅会进入一次，因为发生错误之后，会取消订阅</span></span><br><span class="line">                Toast.makeText(getBaseContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="comment">//上下两段代码具有相同意义</span></span><br><span class="line">disposable=RxBus.getInstance().toObservable(UserEvent.class)</span><br><span class="line">                .observeOn(AndroidSchedulers.mainThread())</span><br><span class="line">                .subscribe(<span class="keyword">new</span> Consumer&lt;UserEvent&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">accept</span><span class="params">(UserEvent userEvent)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                btnNext.setText(userEvent.getName());</span><br><span class="line">                Toast.makeText(getBaseContext(),userEvent.toString(),Toast.LENGTH_SHORT).show();</span><br><span class="line">                Log.d(<span class="string">"AActivity"</span>,<span class="string">"onNext:"</span>+Thread.currentThread().getName());</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"空指针错误"</span>);<span class="comment">//发生错误之后，会取消订阅</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,<span class="keyword">new</span> Consumer&lt;Throwable&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">accept</span><span class="params">(Throwable throwable)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                <span class="comment">//发生错误后仅仅会进入一次，因为发生错误之后，会取消订阅</span></span><br><span class="line">                Toast.makeText(getBaseContext(),throwable.getMessage(),Toast.LENGTH_SHORT).show();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//解除</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onDestroy();</span><br><span class="line">    RxBus.getInstance().unregister(disposable);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="关键代码"><a href="#关键代码" class="headerlink" title="关键代码"></a>关键代码</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">RxBus</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Relay&lt;Object&gt; bus = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> RxBus instance;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//禁用构造方法</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">RxBus</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        bus = PublishRelay.create().toSerialized();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> RxBus <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (instance == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (RxBus.class) &#123;</span><br><span class="line">                <span class="keyword">if</span> (instance == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    instance = <span class="keyword">new</span> RxBus();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">send</span><span class="params">(Object event)</span> </span>&#123;</span><br><span class="line">        bus.accept(event);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span>  &lt;T&gt; <span class="function">Observable&lt;T&gt; <span class="title">toObservable</span><span class="params">(Class&lt;T&gt; eventType)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> bus.ofType(eventType);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用时，需要你定义一些事件类型，例如上面的UserEvent，该类型只会传递给订阅该类型的观察者。这主要归功于ofType操作符。</p>
+<p>这里仅仅实现了广播事件，基于ReRelay还可以实现其他方式。</p>
+<p>如果有什么不理解的，请浏览<a href="https://github.com/kuwork/rxbus" target="_blank" rel="noopener">基于Rxjava2+RxRelay 的RxBus</a>源码。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/Rxjava/" rel="tag"># Rxjava</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/07/酷狗-Android-App-插件化实施过程(转载)/" rel="next" title="酷狗Android App插件化实施过程(转载)">
+                <i class="fa fa-chevron-left"></i> 酷狗Android App插件化实施过程(转载)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/18/使用Gradle发布aar-jar项目到JCenter仓库/" rel="prev" title="使用Gradle发布aar/jar项目到JCenter仓库">
+                使用Gradle发布aar/jar项目到JCenter仓库 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="Kuwork" />
+          <p class="site-author-name" itemprop="name">Kuwork</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一辆有意思的BUS"><span class="nav-number">1.</span> <span class="nav-text">一辆有意思的BUS</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RxBus-最基本的实现"><span class="nav-number">2.</span> <span class="nav-text">RxBus 最基本的实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ReRelay开源项目"><span class="nav-number">3.</span> <span class="nav-text">ReRelay开源项目</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RxBus-下载使用"><span class="nav-number">4.</span> <span class="nav-text">RxBus 下载使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何使用"><span class="nav-number">5.</span> <span class="nav-text">如何使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#发送事件"><span class="nav-number">5.1.</span> <span class="nav-text">发送事件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接受事件"><span class="nav-number">5.2.</span> <span class="nav-text">接受事件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关键代码"><span class="nav-number">6.</span> <span class="nav-text">关键代码</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuwork</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

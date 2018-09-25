@@ -1,0 +1,762 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,NDK," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="前些日子想扩充一下Libdiff+Bzip2，达到能解压Tar包。将Gnu Tar 用ndk的方式编译进来，始终编不过，还有一个方式就是以交叉编译的方式得到so，虽然交叉编译Tar的路子也没走通（最后通过更强大的p7zip解决压缩问题），这里把交叉编译配置过程写一下记录吧。  关于NDK的说明在这里 make-standalone-toolchain.sh脚本位于 $NDK/build/too">
+<meta name="keywords" content="Android,NDK">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NDK toolchain 交叉编译配置">
+<meta property="og:url" content="https://kuwork.github.io/2017/12/17/NDK-toolchain-交叉编译配置/index.html">
+<meta property="og:site_name" content="K.W. 时间囊">
+<meta property="og:description" content="前些日子想扩充一下Libdiff+Bzip2，达到能解压Tar包。将Gnu Tar 用ndk的方式编译进来，始终编不过，还有一个方式就是以交叉编译的方式得到so，虽然交叉编译Tar的路子也没走通（最后通过更强大的p7zip解决压缩问题），这里把交叉编译配置过程写一下记录吧。  关于NDK的说明在这里 make-standalone-toolchain.sh脚本位于 $NDK/build/too">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-b5697f4aac49c1d5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-09-25T07:26:50.601Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NDK toolchain 交叉编译配置">
+<meta name="twitter:description" content="前些日子想扩充一下Libdiff+Bzip2，达到能解压Tar包。将Gnu Tar 用ndk的方式编译进来，始终编不过，还有一个方式就是以交叉编译的方式得到so，虽然交叉编译Tar的路子也没走通（最后通过更强大的p7zip解决压缩问题），这里把交叉编译配置过程写一下记录吧。  关于NDK的说明在这里 make-standalone-toolchain.sh脚本位于 $NDK/build/too">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/3020228-b5697f4aac49c1d5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://kuwork.github.io/2017/12/17/NDK-toolchain-交叉编译配置/"/>
+
+
+
+
+
+  <title> NDK toolchain 交叉编译配置 | K.W. 时间囊 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">K.W. 时间囊</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">停下来休息的时候,不要忘记别人还在奔跑</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://kuwork.github.io/2017/12/17/NDK-toolchain-交叉编译配置/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kuwork">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="K.W. 时间囊">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                NDK toolchain 交叉编译配置
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-17T21:02:00+08:00">
+                2017-12-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://upload-images.jianshu.io/upload_images/3020228-b5697f4aac49c1d5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>前些日子想扩充一下Libdiff+Bzip2，达到能解压Tar包。将Gnu Tar 用ndk的方式编译进来，始终编不过，还有一个方式就是以交叉编译的方式得到so，虽然交叉编译Tar的路子也没走通（最后通过更强大的p7zip解决压缩问题），这里把交叉编译配置过程写一下记录吧。  关于NDK的说明在<a href="https://developer.android.com/ndk/guides/index.html" target="_blank" rel="noopener">这里</a></p>
+<p>make-standalone-toolchain.sh脚本位于 $NDK/build/tools/ 目录中，其中 $NDK 是 NDK 的安装根目录。 配置环境变量 : 修改 ~/.bash_profile ,在文件尾部加入</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> SDK_HOME = 填上SDK父目录路径</span><br><span class="line"><span class="built_in">export</span> NDK=<span class="variable">$SDK_HOME</span>/android-sdks/ndk-bundle</span><br><span class="line"><span class="comment"># darwin-x86_64 是Mac的路径，实际按目录结构修改</span></span><br><span class="line"><span class="built_in">export</span> PATH=<span class="string">"<span class="variable">$NDK</span>:<span class="variable">$NDK</span>/shader-tools/darwin-x86_64:<span class="variable">$NDK</span>/build/tools:<span class="variable">$PATH</span>"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 预设值，待会才生成的目录</span></span><br><span class="line"><span class="built_in">export</span> SYSROOT=/tmp/my-android-toolchain/sysroot</span><br><span class="line"><span class="built_in">export</span> PATH=/tmp/my-android-toolchain/bin:<span class="variable">$PATH</span></span><br><span class="line"><span class="built_in">export</span> CC=arm-linux-androideabi-gcc   <span class="comment"># or export CC=clang</span></span><br><span class="line"><span class="built_in">export</span> CXX=arm-linux-androideabi-g++  <span class="comment"># or export CXX=clang++</span></span><br><span class="line"><span class="built_in">export</span> CXXFLAGS=<span class="string">"-lstdc++"</span></span><br></pre></td></tr></table></figure>
+<p>配置了上面的设置，重启终端，make-standalone-toolchain.sh就能被找到。</p>
+<p>下面展示了使用make-standalone-toolchain.sh生成预设编译环境的示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">make-standalone-toolchain.sh --install-dir=/tmp/my-android-toolchain \</span><br><span class="line">--toolchain=arm-linux-androideabi-4.9 \</span><br><span class="line">--arch=arm --platform=android-15 --force</span><br></pre></td></tr></table></figure>
+<p>此命令创建一个名为 /tmp/my-android-toolchain/ 的目录，包含一个 android-15/arch-arm sysroot 的副本，以及适用于 32 位 ARM 架构的工具链二进制文件的副本。</p>
+<p>请注意，工具链二进制文件不依赖或包含主机特有的路径，换句话说，您可以将它们安装在任意位置中，甚至移动它们（如果需要）。</p>
+<p><strong>这样设置以后就能直接运行项目根目录的configure脚本，无需配置环境参数。</strong></p>
+<p>默认情况下，构建系统使用 32 位、基于 ARM 的 GCC 4.8 工具链。不过，您可以通过将 –arch=</p>
+<toolchain> 指定为选项来指定一个不同的值。下表显示将用于其他工具链的值：</toolchain>
+
+<p><strong>表. 工具链和对应的值，使用 –arch</strong> 。</p>
+<table>
+<thead>
+<tr>
+<th>工具链</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mips64 编译器</td>
+<td>–arch=mips64</td>
+</tr>
+<tr>
+<td>mips GCC 4.8 编译器</td>
+<td>–arch=mips</td>
+</tr>
+<tr>
+<td>x86 GCC 4.8 编译器</td>
+<td>–arch=x86</td>
+</tr>
+<tr>
+<td>x86_64 GCC 4.8 编译器</td>
+<td>–arch=x86_64</td>
+</tr>
+<tr>
+<td>mips GCC 4.8 编译器</td>
+<td>–arch=mips</td>
+</tr>
+</tbody>
+</table>
+<p>或者，您可以使用 –toolchain=</p>
+<toolchain> 选项。下表显示您可以为 <toolchain> 指定的值：</toolchain></toolchain>
+
+<table>
+<thead>
+<tr>
+<th>工具链</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>arm</td>
+<td>–toolchain=arm-linux-androideabi-4.8<br></td>
+</tr>
+</tbody>
+</table>
+<p>–toolchain=arm-linux-androideabi-4.9<br><br>–toolchain=arm-linux-android-clang3.5<br><br>–toolchain=arm-linux-android-clang3.6<br><br>x86 | –toolchain=x86-linux-android-4.8<br><br>–toolchain=x86-linux-android-4.9<br><br>–toolchain=x86-linux-android-clang3.5<br><br>–toolchain=x86-linux-android-clang3.6<br><br>mips | –toolchain=mips-linux-android-4.8<br><br>–toolchain=mips-linux-android-4.9<br><br>–toolchain=mips-linux-android-clang3.5<br><br>–toolchain=mips-linux-android-clang3.6<br><br>arm64 | –toolchain=aarch64-linux-android-4.9<br><br>–toolchain=aarch64-linux-android-clang3.5<br><br>–toolchain=aarch64-linux-android-clang3.6<br><br>x86_64 | –toolchain=x86_64-linux-android-4.9<br><br>–toolchain=x86_64-linux-android-clang3.5<br><br>–toolchain=x86_64-linux-android-clang3.6<br><br>mips64 | –toolchain=mips64el-linux-android-4.9<br><br>–toolchain=mips64el-linux-android-clang3.5<br><br>–toolchain=mips64el-linux-android-clang3.6<br></p>
+<p>注：表 4 并不是一个详尽的列表。其他组合可能也有效，但未经验证。</p>
+<p>您可以指定 –stl=stlport 以复制 libstlport，而不是使用默认的 libgnustl。 如果您执行此操作并想链接共享库，则必须以显式方式使用 -lstlport_shared。 此要求与必须为 GNU libstdc++ 使用 -lgnustl_shared 相似。</p>
+<p>同样，您可以指定 –stl=libc++ 复制 LLVM libc++ 标头和库。如需链接共享库，您必须以显式方式使用 -lc++_shared。</p>
+<p>请注意，如果您忽略 -install-dir 选项，则 make-standalone-toolchain.sh shell 脚本在 tmp/ndk/</p>
+<p><toolchain-name>.tar.bz2 中创建一个 tarball。 此 tarball 让您可以轻松存档和重新分发二进制文件。</toolchain-name></p>
+<p>此独立工具链还提供了一个额外优势，即：它包含一个 C++ STL 库的工作中副本以及工作中例外和 RTTI 支持。</p>
+<p>如需了解更多选项和详细信息，请使用 –help。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/NDK/" rel="tag"># NDK</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/01/SQLite锁机制/" rel="next" title="SQLite锁机制">
+                <i class="fa fa-chevron-left"></i> SQLite锁机制
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/04/Android跳转到应用商店详情页面（更全面）/" rel="prev" title="Android跳转到应用商店详情页面（更全面）">
+                Android跳转到应用商店详情页面（更全面） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="Kuwork" />
+          <p class="site-author-name" itemprop="name">Kuwork</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuwork</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,766 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,插件化,Small框架," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="17年春节前这段时间一直抱着Small(aarVersion = ‘1.1.0-alpha1’)，打算从零开始一个新的项目。心想Small源代码也该好好看看，究竟从哪里开始才好呢？ 还是从官方例子出发，从启动开始深入。  　　首先从Small在Github 上的Sample项目开始了解Small的基本状况，如果要深入了解Small 的具体实现，就必须深入到其中的DevSample项目，因为这才">
+<meta name="keywords" content="Android,插件化,Small框架">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android Small 源码分析(一) 启动流程">
+<meta property="og:url" content="https://kuwork.github.io/2017/02/04/Android-Small-源码分析(一)-启动流程/index.html">
+<meta property="og:site_name" content="K.W. 时间囊">
+<meta property="og:description" content="17年春节前这段时间一直抱着Small(aarVersion = ‘1.1.0-alpha1’)，打算从零开始一个新的项目。心想Small源代码也该好好看看，究竟从哪里开始才好呢？ 还是从官方例子出发，从启动开始深入。  　　首先从Small在Github 上的Sample项目开始了解Small的基本状况，如果要深入了解Small 的具体实现，就必须深入到其中的DevSample项目，因为这才">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-169bce07d656247a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-f0f22004632a5c15.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/400">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-249f65821b3b2a15.png?watermark/1/image/aHR0cDovL29od2NrdWpzdS5ia3QuY2xvdWRkbi5jb20vJUU1JUE0JUI0JUU1JTgzJThGJUU2JUIwJUI0JUU1JThEJUIwLnBuZw==/gravity/NorthEast/imageMogr2/auto-orient/strip%7CimageView2/2/h/400">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-297abc8def84be8a.png?watermark/1/image/aHR0cDovL29od2NrdWpzdS5ia3QuY2xvdWRkbi5jb20vJUU1JUE0JUI0JUU1JTgzJThGJUU2JUIwJUI0JUU1JThEJUIwLnBuZw==/gravity/SouthEast/imageMogr2/auto-orient/strip%7CimageView2/2/w/600">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-0a210bfa61589540.png?watermark/1/image/aHR0cDovL29od2NrdWpzdS5ia3QuY2xvdWRkbi5jb20vJUU1JUE0JUI0JUU1JTgzJThGJUU2JUIwJUI0JUU1JThEJUIwLnBuZw==/gravity/NorthEast/imageMogr2/auto-orient/strip%7CimageView2/2/w/600">
+<meta property="og:updated_time" content="2018-09-25T07:15:20.515Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android Small 源码分析(一) 启动流程">
+<meta name="twitter:description" content="17年春节前这段时间一直抱着Small(aarVersion = ‘1.1.0-alpha1’)，打算从零开始一个新的项目。心想Small源代码也该好好看看，究竟从哪里开始才好呢？ 还是从官方例子出发，从启动开始深入。  　　首先从Small在Github 上的Sample项目开始了解Small的基本状况，如果要深入了解Small 的具体实现，就必须深入到其中的DevSample项目，因为这才">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/3020228-169bce07d656247a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://kuwork.github.io/2017/02/04/Android-Small-源码分析(一)-启动流程/"/>
+
+
+
+
+
+  <title> Android Small 源码分析(一) 启动流程 | K.W. 时间囊 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">K.W. 时间囊</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">停下来休息的时候,不要忘记别人还在奔跑</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://kuwork.github.io/2017/02/04/Android-Small-源码分析(一)-启动流程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kuwork">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="K.W. 时间囊">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android Small 源码分析(一) 启动流程
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-04T19:56:00+08:00">
+                2017-02-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id=""><a href="#" class="headerlink" title=""></a><img src="http://upload-images.jianshu.io/upload_images/3020228-169bce07d656247a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></h2><p>　　17年春节前这段时间一直抱着Small(aarVersion = ‘1.1.0-alpha1’)，打算从零开始一个新的项目。心想Small源代码也该好好看看，究竟从哪里开始才好呢？ 还是从官方例子出发，从启动开始深入。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-f0f22004632a5c15.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/400" alt=""></p>
+<p>　　首先从Small在Github 上的<a href="https://github.com/wequick/Small/tree/master/Android" target="_blank" rel="noopener">Sample</a>项目开始了解Small的基本状况，如果要深入了解Small 的具体实现，就必须深入到其中的<a href="https://github.com/wequick/Small/tree/master/Android/DevSample" target="_blank" rel="noopener">DevSample</a>项目，因为这才是Small的源码所在。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-249f65821b3b2a15.png?watermark/1/image/aHR0cDovL29od2NrdWpzdS5ia3QuY2xvdWRkbi5jb20vJUU1JUE0JUI0JUU1JTgzJThGJUU2JUIwJUI0JUU1JThEJUIwLnBuZw==/gravity/NorthEast/imageMogr2/auto-orient/strip%7CimageView2/2/h/400" alt="源码目录结构"></p>
+<p>　　通过UML工具（CodeIris 插件）可以一窥其内部，得到相关的类图，这里是以Smalll类为源头，省略一部分类，大致了解到核心所在。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-297abc8def84be8a.png?watermark/1/image/aHR0cDovL29od2NrdWpzdS5ia3QuY2xvdWRkbi5jb20vJUU1JUE0JUI0JUU1JTgzJThGJUU2JUIwJUI0JUU1JThEJUIwLnBuZw==/gravity/SouthEast/imageMogr2/auto-orient/strip%7CimageView2/2/w/600" alt=""></p>
+<p>　　从实际应用Small过程中，想必会关注到bundle.json这个文件，可以看得出BundleLaucher 是个关键类。因此将其抽取出来，分析关联的类结构(这里省略覆盖方法)。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-0a210bfa61589540.png?watermark/1/image/aHR0cDovL29od2NrdWpzdS5ia3QuY2xvdWRkbi5jb20vJUU1JUE0JUI0JUU1JTgzJThGJUU2JUIwJUI0JUU1JThEJUIwLnBuZw==/gravity/NorthEast/imageMogr2/auto-orient/strip%7CimageView2/2/w/600" alt=""></p>
+<p>　　BundleLauncher以及 SoBundleLauncher 都是抽象类，具体的应用得细看ApkBundleLauncher、ActivityLauncher这两个类，我会在后面具体分析到。</p>
+<p>　　到此，我们已经大致了解Small的源码目录结构，我们要退一步从Small Sample项目开始，也就是用实际应用的项目开始溯源。</p>
+<h1 id="一-Small-启动流程"><a href="#一-Small-启动流程" class="headerlink" title="一. Small 启动流程"></a>一. Small 启动流程</h1><p>##（一）Small 预处理<br>　　首先我们看一下宿主app的Application类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Application</span> <span class="keyword">extends</span> <span class="title">android</span>.<span class="title">app</span>.<span class="title">Application</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Application</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// This should be the very first of the application lifecycle.</span></span><br><span class="line">        <span class="comment">// It's also ahead of the installing of content providers by what we can avoid</span></span><br><span class="line">        <span class="comment">// the ClassNotFound exception on if the provider is unimplemented in the host.</span></span><br><span class="line">        Small.preSetUp(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate();</span><br><span class="line">        <span class="comment">// Optional</span></span><br><span class="line">        Small.setBaseUri(<span class="string">"http://m.wequick.net/demo/"</span>);<span class="comment">//设定基本的跳转地址</span></span><br><span class="line">        Small.setWebViewClient(<span class="keyword">new</span> MyWebViewClient());<span class="comment">//设置网页的基本回调</span></span><br><span class="line">        Small.setLoadFromAssets(BuildConfig.LOAD_FROM_ASSETS);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">MyWebViewClient</span> <span class="keyword">extends</span> <span class="title">WebViewClient</span> </span>&#123;</span><br><span class="line">     ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>　　Small.java内部基本都是静态方法，是Small框架的程序入口。在Application的构造方法中调用Small.preSetUp(this)，意思就是这应该在application的生命周期中最早调用的，也是安装Content Providers 之前，可以避免在宿主中发生ClassNotFound 异常.<br>　　具体来看看preSetUp里面吧。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">preSetUp</span><span class="params">(Application context)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (sContext != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        sContext = context;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Register default bundle launchers</span></span><br><span class="line">        registerLauncher(<span class="keyword">new</span> ActivityLauncher());</span><br><span class="line">        registerLauncher(<span class="keyword">new</span> ApkBundleLauncher());</span><br><span class="line">        registerLauncher(<span class="keyword">new</span> WebBundleLauncher());</span><br><span class="line">        Bundle.onCreateLaunchers(context);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>　　通过Bundle.registerLauncher方法添加三个BundleLauncher到Bundle.sBundleLaunchers列表，在通过 Bundle.onCreateLaunchers启动这三者的onCreate方法，但其实只有ApkBundleLauncher覆盖了OnCreate 方法。<br>　　ApkBundleLauncher是bundle加载的管理类，我们看看它的OnCreate是怎么定义的。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Application app)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(app);</span><br><span class="line"></span><br><span class="line">        Object<span class="comment">/*ActivityThread*/</span> thread;</span><br><span class="line">        List&lt;ProviderInfo&gt; providers;</span><br><span class="line">        Instrumentation base;</span><br><span class="line">        ApkBundleLauncher.InstrumentationWrapper wrapper;</span><br><span class="line">        Field f;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 通过getActivityThread反射获取ActivityThread的对象</span></span><br><span class="line">        thread = ReflectAccelerator.getActivityThread(app);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将自定义的InstrumentationWrapper替换掉原来的mInstumentation</span></span><br><span class="line">       <span class="comment">// Small通过占坑的方式管理Activity的.重点就在这里</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            f = thread.getClass().getDeclaredField(<span class="string">"mInstrumentation"</span>);<span class="comment">//取得mInstrumentation属性</span></span><br><span class="line">            f.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">            base = (Instrumentation) f.get(thread);</span><br><span class="line">            wrapper = <span class="keyword">new</span> ApkBundleLauncher.InstrumentationWrapper(base);</span><br><span class="line">            f.set(thread, wrapper);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Failed to replace instrumentation for thread: "</span> + thread);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 继续替换Message Handler，用于恢复Activity Info 到真实的Activity</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            f = thread.getClass().getDeclaredField(<span class="string">"mH"</span>);</span><br><span class="line">            f.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">            Handler ah = (Handler) f.get(thread);</span><br><span class="line">            f = Handler.class.getDeclaredField(<span class="string">"mCallback"</span>);</span><br><span class="line">            f.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">            f.set(ah, <span class="keyword">new</span> ApkBundleLauncher.ActivityThreadHandlerCallback());</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Failed to replace message handler for thread: "</span> + thread);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 获取App的provider列表</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            f = thread.getClass().getDeclaredField(<span class="string">"mBoundApplication"</span>);</span><br><span class="line">            f.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">            Object<span class="comment">/*AppBindData*/</span> data = f.get(thread);</span><br><span class="line">            f = data.getClass().getDeclaredField(<span class="string">"providers"</span>);</span><br><span class="line">            f.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">            providers = (List&lt;ProviderInfo&gt;) f.get(data);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Failed to get providers from thread: "</span> + thread);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 保存到全局变量，便于以后替换管理</span></span><br><span class="line">        sActivityThread = thread;</span><br><span class="line">        sProviders = providers;</span><br><span class="line">        sHostInstrumentation = base;</span><br><span class="line">        sBundleInstrumentation = wrapper;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　ApkBundleLauncher.InstrumentationWrapper 这个是关键类，Android activities受<a href="https://github.com/android/platform_frameworks_base/blob/master/core/java/android/app/Instrumentation.java" target="_blank" rel="noopener">Instrumentation</a>监控。每一个Activity由<a href="https://github.com/android/platform_frameworks_base/blob/master/core/java/android/app/Activity.java" target="_blank" rel="noopener">Activity</a>的startActivityForResult<br>方法启动，通过instrumentation的execStartActivity方法激活生命周期；<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startActivityForResult</span><span class="params">(Intent intent, <span class="keyword">int</span> requestCode, @Nullable Bundle options)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mParent == <span class="keyword">null</span>) &#123;</span><br><span class="line">        Instrumentation.ActivityResult ar =</span><br><span class="line">            mInstrumentation.execStartActivity( <span class="comment">// Override entry 1</span></span><br><span class="line">                <span class="keyword">this</span>, mMainThread.getApplicationThread(), mToken, <span class="keyword">this</span>,</span><br><span class="line">                intent, requestCode, options);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　在<a href="https://github.com/android/platform_frameworks_base/blob/master/core/java/android/app/ActivityThread.java" target="_blank" rel="noopener">ActivityThread</a>的performLaunchActivity方法中通过instrumentation的newActivity方法实例化。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Activity <span class="title">performLaunchActivity</span><span class="params">(ActivityClientRecord r, Intent customIntent)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    Activity activity = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        java.lang.ClassLoader cl = r.packageInfo.getClassLoader();</span><br><span class="line">        activity = mInstrumentation.newActivity( <span class="comment">// Override entry 2</span></span><br><span class="line">                cl, component.getClassName(), r.intent);</span><br><span class="line">        StrictMode.incrementExpectedActivityCount(activity.getClass());</span><br><span class="line">        r.intent.setExtrasClassLoader(cl);</span><br><span class="line">        r.intent.prepareToEnterProcess();</span><br><span class="line">        <span class="keyword">if</span> (r.state != <span class="keyword">null</span>) &#123;</span><br><span class="line">            r.state.setClassLoader(cl);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!mInstrumentation.onException(activity, e)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(</span><br><span class="line">                <span class="string">"Unable to instantiate activity "</span> + component</span><br><span class="line">                + <span class="string">": "</span> + e.toString(), e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　Small 想要做到动态注册Activity，首先在宿主manifest中注册一个命名特殊的占坑activity来欺骗startActivityForResult以获得生命周期，再欺骗performLaunchActivity来获得插件activity实例。又为了处理之间的信息传递，因此有了后面的ActivityThreadHandlerCallback。</p>
+<p>##（二）LaunchActivity 启动初始化<br>　　Small.setUp这个方法需要放在OnStart()中执行，避免一些问题的产生，初始化完成之后，回调onComplete方法。完成加载之后，之后就交给插件的业务逻辑了。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onStart</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onStart();</span><br><span class="line"></span><br><span class="line">        SharedPreferences sp = LaunchActivity.<span class="keyword">this</span>.getSharedPreferences(<span class="string">"profile"</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">final</span> SharedPreferences.Editor se = sp.edit();</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">long</span> tStart = System.nanoTime();</span><br><span class="line">        se.putLong(<span class="string">"setUpStart"</span>, tStart);</span><br><span class="line">        Small.setUp(LaunchActivity.<span class="keyword">this</span>, <span class="keyword">new</span> net.wequick.small.Small.OnCompleteListener() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onComplete</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">long</span> tEnd = System.nanoTime();</span><br><span class="line">                se.putLong(<span class="string">"setUpFinish"</span>, tEnd).apply();</span><br><span class="line">                <span class="keyword">long</span> offset = tEnd - tStart;</span><br><span class="line">                <span class="keyword">if</span> (offset &lt; MIN_INTRO_DISPLAY_TIME) &#123;</span><br><span class="line">                    <span class="comment">// 这个延迟仅为了让 "Small Logo" 显示足够的时间, 实际应用中不需要</span></span><br><span class="line">                    getWindow().getDecorView().postDelayed(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">                        <span class="meta">@Override</span></span><br><span class="line">                        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                            Small.openUri(<span class="string">"main"</span>, LaunchActivity.<span class="keyword">this</span>);</span><br><span class="line">                            finish();</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;, (MIN_INTRO_DISPLAY_TIME - offset) / <span class="number">1000000</span>);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    Small.openUri(<span class="string">"main"</span>, LaunchActivity.<span class="keyword">this</span>);</span><br><span class="line">                    finish();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　现在我们跟踪进setUp方法，看看里面究竟做了什么。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setUp</span><span class="params">(Context context, OnCompleteListener listener)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (sContext == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">// Tips for CODE-BREAKING</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(</span><br><span class="line">                    <span class="string">"Please call `Small.preSetUp' in your application first"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (sHasSetUp) &#123;</span><br><span class="line">            <span class="keyword">if</span> (listener != <span class="keyword">null</span>) &#123;</span><br><span class="line">                listener.onComplete();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Bundle.loadLaunchableBundles(listener);</span><br><span class="line">        sHasSetUp = <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　可以看到Small确认还没初始化之后，就递给了Bundle类，在其内部执行静态方法loadLaunchableBundles，我们继续往下看。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">loadLaunchableBundles</span><span class="params">(Small.OnCompleteListener listener)</span> </span>&#123;</span><br><span class="line">       Context context = Small.getContext();</span><br><span class="line"></span><br><span class="line">       <span class="keyword">boolean</span> synchronous = (listener == <span class="keyword">null</span>);</span><br><span class="line">       <span class="keyword">if</span> (synchronous) &#123;</span><br><span class="line">           loadBundles(context);</span><br><span class="line">           <span class="keyword">return</span>;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="comment">// Asynchronous</span></span><br><span class="line">       <span class="keyword">if</span> (sThread == <span class="keyword">null</span>) &#123;</span><br><span class="line">           sThread = <span class="keyword">new</span> LoadBundleThread(context);</span><br><span class="line">           sHandler = <span class="keyword">new</span> LoadBundleHandler(listener);</span><br><span class="line">           sThread.start();</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　这个方法很简单，启动一个LoadBundleThread线程，一个Handler处理完成后的事项。在LoadBundleThread里面我们肯定会看到bundle.json的处理。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">LoadBundleThread</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line">        Context mContext;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">LoadBundleThread</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">            mContext = context;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            loadBundles(mContext);</span><br><span class="line">            sHandler.obtainMessage(MSG_COMPLETE).sendToTarget();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　这里和之前的版本比较，会发现少了Bundle.setupLaunchers(Context)方法，仔细往下就会发现其实它被延后到loadBundles内部了。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">loadBundles</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        JSONObject manifestData;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            File patchManifestFile = getPatchManifestFile();<span class="comment">// app路径/file/bundle.json</span></span><br><span class="line">            String manifestJson = getCacheManifest();<span class="comment">//SharedPreferences的bundle.json字段</span></span><br><span class="line">            <span class="keyword">if</span> (manifestJson != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="comment">// Load from cache and save as patch</span></span><br><span class="line">                <span class="keyword">if</span> (!patchManifestFile.exists()) patchManifestFile.createNewFile();</span><br><span class="line">                PrintWriter pw = <span class="keyword">new</span> PrintWriter(<span class="keyword">new</span> FileOutputStream(patchManifestFile));</span><br><span class="line">                pw.print(manifestJson);</span><br><span class="line">                pw.flush();</span><br><span class="line">                pw.close();</span><br><span class="line">                <span class="comment">// Clear cache</span></span><br><span class="line">                setCacheManifest(<span class="keyword">null</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (patchManifestFile.exists()) &#123;</span><br><span class="line">                <span class="comment">// Load from patch</span></span><br><span class="line">                BufferedReader br = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> FileReader(patchManifestFile));</span><br><span class="line">                StringBuilder sb = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">                String line;</span><br><span class="line">                <span class="keyword">while</span> ((line = br.readLine()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    sb.append(line);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                br.close();</span><br><span class="line">                manifestJson = sb.toString();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// Load from built-in `assets/bundle.json'</span></span><br><span class="line">                InputStream builtinManifestStream = context.getAssets().open(BUNDLE_MANIFEST_NAME);</span><br><span class="line">                <span class="keyword">int</span> builtinSize = builtinManifestStream.available();</span><br><span class="line">                <span class="keyword">byte</span>[] buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[builtinSize];</span><br><span class="line">                builtinManifestStream.read(buffer);</span><br><span class="line">                builtinManifestStream.close();</span><br><span class="line">                manifestJson = <span class="keyword">new</span> String(buffer, <span class="number">0</span>, builtinSize);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Parse manifest file</span></span><br><span class="line">            manifestData = <span class="keyword">new</span> JSONObject(manifestJson);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Manifest manifest = parseManifest(manifestData);</span><br><span class="line">        <span class="keyword">if</span> (manifest == <span class="keyword">null</span>) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">        setupLaunchers(context);</span><br><span class="line"></span><br><span class="line">        loadBundles(manifest.bundles);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　由上可知，处理bundle.json 有位置优先级关系：manifestJson &gt; patchManifestFile &gt; assets/bundle.json ，也就是SharedPreferences &gt; File &gt; Assets 。因此，我们最初的配置在Assets里面的bundle.json 会在最后处理。<br>　　接着回到先前提及的setupLaunchers，回忆一下，在preSetUp中我们看到添加了3个BundleLauncher，这里就是对三者的setUp进行调用。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setupLaunchers</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (sBundleLaunchers == <span class="keyword">null</span>) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (BundleLauncher launcher : sBundleLaunchers) &#123;</span><br><span class="line">            launcher.setUp(context);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li><p><strong>ActivityLauncher的setUp方法</strong><br>　　我们继续跟踪进去，首先看看ActivityLauncher的setUp方法,它将注册在宿主的activities添加到sActivityClasses里面。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ActivityLauncher</span> <span class="keyword">extends</span> <span class="title">BundleLauncher</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUp</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.setUp(context);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Read the registered classes in host's manifest file</span></span><br><span class="line">        PackageInfo pi;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            pi = context.getPackageManager().getPackageInfo(</span><br><span class="line">                    context.getPackageName(), PackageManager.GET_ACTIVITIES);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (PackageManager.NameNotFoundException ignored) &#123;</span><br><span class="line">            <span class="comment">// Never reach</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        ActivityInfo[] as = pi.activities;</span><br><span class="line">        <span class="keyword">if</span> (as != <span class="keyword">null</span>) &#123;</span><br><span class="line">            sActivityClasses = <span class="keyword">new</span> HashSet&lt;String&gt;();</span><br><span class="line">            <span class="keyword">for</span> (ActivityInfo ai : as) &#123;</span><br><span class="line">                sActivityClasses.add(ai.name);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>ApkBundleLauncher的setUp方法<br>　　这里与之前的ApkBundleLauncher的onCreate方法相呼应，通过动态代理的方式，将Intent参数重新包装来完成上面所说的欺骗方式。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ApkBundleLauncher</span> <span class="keyword">extends</span> <span class="title">SoBundleLauncher</span> </span>&#123;</span><br><span class="line">     ...</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUp</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.setUp(context);</span><br><span class="line"></span><br><span class="line">        Field f;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// AOP for pending intent</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            f = TaskStackBuilder.class.getDeclaredField(<span class="string">"IMPL"</span>);</span><br><span class="line">            f.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">            <span class="keyword">final</span> Object impl = f.get(TaskStackBuilder.class);</span><br><span class="line">            InvocationHandler aop = <span class="keyword">new</span> InvocationHandler() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                    Intent[] intents = (Intent[]) args[<span class="number">1</span>];</span><br><span class="line">                    <span class="keyword">for</span> (Intent intent : intents) &#123;</span><br><span class="line">                        sBundleInstrumentation.wrapIntent(intent);</span><br><span class="line">                        intent.setAction(Intent.ACTION_MAIN);</span><br><span class="line">                        intent.addCategory(Intent.CATEGORY_LAUNCHER);</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">return</span> method.invoke(impl, args);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;;</span><br><span class="line">            Object newImpl = Proxy.newProxyInstance(context.getClassLoader(), impl.getClass().getInterfaces(), aop);</span><br><span class="line">            f.set(TaskStackBuilder.class, newImpl);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception ignored) &#123;</span><br><span class="line">            ignored.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>　　我们进去wrapIntent看看,如果不是精确命中，intent.getComponent()为空，因此首先处理交给宿主的冲突问题，如果是系统或者宿主的Action，直接退出；<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">wrapIntent</span><span class="params">(Intent intent)</span> </span>&#123;</span><br><span class="line">            ComponentName component = intent.getComponent();</span><br><span class="line">            String realClazz;</span><br><span class="line">            <span class="keyword">if</span> (component == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="comment">// Try to resolve the implicit action which has registered in host.</span></span><br><span class="line">                component = intent.resolveActivity(Small.getContext().getPackageManager());</span><br><span class="line">                <span class="keyword">if</span> (component != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    <span class="comment">// A system or host action, nothing to be done.</span></span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// Try to resolve the implicit action which has registered in bundles.</span></span><br><span class="line">                realClazz = resolveActivity(intent);</span><br><span class="line">                <span class="keyword">if</span> (realClazz == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    <span class="comment">// Cannot resolved, nothing to be done.</span></span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                realClazz = component.getClassName();</span><br><span class="line">                <span class="keyword">if</span> (realClazz.startsWith(STUB_ACTIVITY_PREFIX)) &#123;</span><br><span class="line">                    <span class="comment">// Re-wrap to ensure the launch mode works.</span></span><br><span class="line">                    realClazz = unwrapIntent(intent);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (sLoadedActivities == <span class="keyword">null</span>) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">            ActivityInfo ai = sLoadedActivities.get(realClazz);</span><br><span class="line">            <span class="keyword">if</span> (ai == <span class="keyword">null</span>) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Carry the real(plugin) class for incoming `newActivity' method.</span></span><br><span class="line">            intent.addCategory(REDIRECT_FLAG + realClazz);</span><br><span class="line">            String stubClazz = dequeueStubActivity(ai, realClazz);</span><br><span class="line">            intent.setComponent(<span class="keyword">new</span> ComponentName(Small.getContext(), stubClazz));</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　否则尝试处理插件内的冲突(<strong>resolveActivity(intent)</strong>),初始失败则退出。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> String <span class="title">resolveActivity</span><span class="params">(Intent intent)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (sLoadedIntentFilters == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    Iterator&lt;Map.Entry&lt;String, List&lt;IntentFilter&gt;&gt;&gt; it =</span><br><span class="line">            sLoadedIntentFilters.entrySet().iterator();</span><br><span class="line">    <span class="keyword">while</span> (it.hasNext()) &#123;</span><br><span class="line">        Map.Entry&lt;String, List&lt;IntentFilter&gt;&gt; entry = it.next();</span><br><span class="line">        List&lt;IntentFilter&gt; filters = entry.getValue();</span><br><span class="line">        <span class="keyword">for</span> (IntentFilter filter : filters) &#123;</span><br><span class="line">            <span class="keyword">if</span> (filter.hasAction(Intent.ACTION_VIEW)) &#123;</span><br><span class="line">                <span class="comment">// <span class="doctag">TODO:</span> match uri</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (filter.hasCategory(Intent.CATEGORY_DEFAULT)) &#123;</span><br><span class="line">                <span class="comment">// custom action</span></span><br><span class="line">                <span class="keyword">if</span> (filter.hasAction(intent.getAction())) &#123;</span><br><span class="line">                    <span class="comment">// hit</span></span><br><span class="line">                    <span class="keyword">return</span> entry.getKey();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　如果精确命中，先解开(<strong>unwrapIntent(intent);</strong>),后面重新选取一个未使用的activity坑与之使用。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">  <span class="keyword">private</span> String[] mStubQueue;</span><br><span class="line">  <span class="comment">/** Get an usable stub activity clazz from real activity */</span></span><br><span class="line">  <span class="function"><span class="keyword">private</span> String <span class="title">dequeueStubActivity</span><span class="params">(ActivityInfo ai, String realActivityClazz)</span> </span>&#123;</span><br><span class="line">      <span class="keyword">if</span> (ai.launchMode == ActivityInfo.LAUNCH_MULTIPLE) &#123;</span><br><span class="line">          <span class="comment">// In standard mode, the stub activity is reusable.</span></span><br><span class="line">          <span class="comment">// Cause the `windowIsTranslucent' attribute cannot be dynamically set,</span></span><br><span class="line">          <span class="comment">// We should choose the STUB activity with translucent or not here.</span></span><br><span class="line">          Resources.Theme theme = Small.getContext().getResources().newTheme();</span><br><span class="line">          theme.applyStyle(ai.getThemeResource(), <span class="keyword">true</span>);</span><br><span class="line">          TypedArray sa = theme.obtainStyledAttributes(</span><br><span class="line">                  <span class="keyword">new</span> <span class="keyword">int</span>[] &#123; android.R.attr.windowIsTranslucent &#125;);</span><br><span class="line">          <span class="keyword">boolean</span> translucent = sa.getBoolean(<span class="number">0</span>, <span class="keyword">false</span>);</span><br><span class="line">          sa.recycle();</span><br><span class="line">          <span class="keyword">return</span> translucent ? STUB_ACTIVITY_TRANSLUCENT : STUB_ACTIVITY_PREFIX;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">int</span> availableId = -<span class="number">1</span>;</span><br><span class="line">      <span class="keyword">int</span> stubId = -<span class="number">1</span>;</span><br><span class="line">      <span class="keyword">int</span> countForMode = STUB_ACTIVITIES_COUNT;</span><br><span class="line">      <span class="keyword">int</span> countForAll = countForMode * <span class="number">3</span>; <span class="comment">// 3=[singleTop, singleTask, singleInstance]</span></span><br><span class="line">      <span class="keyword">if</span> (mStubQueue == <span class="keyword">null</span>) &#123;</span><br><span class="line">          <span class="comment">// Lazy init</span></span><br><span class="line">          mStubQueue = <span class="keyword">new</span> String[countForAll];</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">int</span> offset = (ai.launchMode - <span class="number">1</span>) * countForMode;</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; countForMode; i++) &#123;</span><br><span class="line">          String usedActivityClazz = mStubQueue[i + offset];</span><br><span class="line">          <span class="keyword">if</span> (usedActivityClazz == <span class="keyword">null</span>) &#123;</span><br><span class="line">              <span class="keyword">if</span> (availableId == -<span class="number">1</span>) availableId = i;</span><br><span class="line">          &#125; <span class="keyword">else</span> <span class="keyword">if</span> (usedActivityClazz.equals(realActivityClazz)) &#123;</span><br><span class="line">              stubId = i;</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (stubId != -<span class="number">1</span>) &#123;</span><br><span class="line">          availableId = stubId;</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (availableId != -<span class="number">1</span>) &#123;</span><br><span class="line">          mStubQueue[availableId + offset] = realActivityClazz;</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          <span class="comment">// <span class="doctag">TODO:</span></span></span><br><span class="line">          Log.e(TAG, <span class="string">"Launch mode "</span> + ai.launchMode + <span class="string">" is full"</span>);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> STUB_ACTIVITY_PREFIX + ai.launchMode + availableId;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">unwrapIntent</span><span class="params">(Intent intent)</span> </span>&#123;</span><br><span class="line">      Set&lt;String&gt; categories = intent.getCategories();</span><br><span class="line">      <span class="keyword">if</span> (categories == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">      <span class="comment">// Get plugin activity class name from categories</span></span><br><span class="line">      Iterator&lt;String&gt; it = categories.iterator();</span><br><span class="line">      <span class="keyword">while</span> (it.hasNext()) &#123;</span><br><span class="line">          String category = it.next();</span><br><span class="line">          <span class="keyword">if</span> (category.charAt(<span class="number">0</span>) == REDIRECT_FLAG) &#123;</span><br><span class="line">              <span class="keyword">return</span> category.substring(<span class="number">1</span>);</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ol start="3">
+<li>ApkBundleLauncher的setUp方法的setUp方法<br>　　启动一个新的android 本身的WebView，这里作者特别注释到：在Android7.0上，在第一次创建WebView的时候，它会用WebView的Assets路径替换掉原Application Assets路径，一旦发生我们先前所做的努力化为泡影，因此我们尽可能将它推到前面设置。<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUp</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">super</span>.setUp(context);</span><br><span class="line">       <span class="keyword">if</span> (Build.VERSION.SDK_INT &lt; <span class="number">24</span>) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">       Bundle.postUI(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">           <span class="meta">@Override</span></span><br><span class="line">           <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">               <span class="comment">// In android 7.0+, on firstly create WebView, it will replace the application</span></span><br><span class="line">               <span class="comment">// assets with the one who has join the WebView asset path.</span></span><br><span class="line">               <span class="comment">// If this happens after our assets replacement,</span></span><br><span class="line">               <span class="comment">// what we have done would be come to naught!</span></span><br><span class="line">               <span class="comment">// So, we need to push it enOOOgh ahead! (#347)</span></span><br><span class="line">               <span class="keyword">new</span> android.webkit.WebView(Small.getContext());</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>　　准备工作都完成了，接着到调用loadBundles的方法，加载所有模块，这里在 <strong>prepareForLaunch()</strong> 包含了很多处理，这里暂且不详细讲了，不然又要扯很远再回来，下一节会详细讲。<br>　　等待这一切完成之后，就通过Handler通知完成，回到LaunchActivity的OnStart内继续执行。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">loadBundles</span><span class="params">(List&lt;Bundle&gt; bundles)</span> </span>&#123;</span><br><span class="line">        sPreloadBundles = bundles;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Prepare bundle</span></span><br><span class="line">        <span class="keyword">for</span> (Bundle bundle : bundles) &#123;</span><br><span class="line">            bundle.prepareForLaunch();<span class="comment">//会产生IO操作</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Handle I/O</span></span><br><span class="line">        <span class="keyword">if</span> (sIOActions != <span class="keyword">null</span>) &#123;</span><br><span class="line">            ExecutorService executor = Executors.newFixedThreadPool(sIOActions.size());</span><br><span class="line">            <span class="keyword">for</span> (Runnable action : sIOActions) &#123;</span><br><span class="line">                executor.execute(action);</span><br><span class="line">            &#125;</span><br><span class="line">            executor.shutdown();</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (!executor.awaitTermination(LOADING_TIMEOUT_MINUTES, TimeUnit.MINUTES)) &#123;</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Failed to load bundles! (TIMEOUT &gt; "</span></span><br><span class="line">                            + LOADING_TIMEOUT_MINUTES + <span class="string">"minutes)"</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            sIOActions = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Wait for the things to be done on UI thread before `postSetUp`,</span></span><br><span class="line">        <span class="comment">// as on 7.0+ we should wait a WebView been initialized. (#347)</span></span><br><span class="line">        <span class="keyword">while</span> (sRunningUIActionCount != <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">100</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Notify `postSetUp' to all launchers</span></span><br><span class="line">        <span class="keyword">for</span> (BundleLauncher launcher : sBundleLaunchers) &#123;</span><br><span class="line">            launcher.postSetUp();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Wait for the things to be done on UI thread after `postSetUp`,</span></span><br><span class="line">        <span class="comment">// like creating a bundle application.</span></span><br><span class="line">        <span class="keyword">while</span> (sRunningUIActionCount != <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">100</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Free all unused temporary variables</span></span><br><span class="line">        <span class="keyword">for</span> (Bundle bundle : bundles) &#123;</span><br><span class="line">            <span class="keyword">if</span> (bundle.parser != <span class="keyword">null</span>) &#123;</span><br><span class="line">                bundle.parser.close();</span><br><span class="line">                bundle.parser = <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            bundle.mBuiltinFile = <span class="keyword">null</span>;</span><br><span class="line">            bundle.mExtractPath = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　至此，启动流程基本讲完了，插件的加载过程，也就是prepareForLaunch()部分，我将在下一节再详细介绍。<br>　　敬请期待！！!</p>
+<p><a href="http://www.jianshu.com/p/0dbccfbd86ff" target="_blank" rel="noopener">第二节:Android Small 源码分析(二) 插件加载过程</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/插件化/" rel="tag"># 插件化</a>
+          
+            <a href="/tags/Small框架/" rel="tag"># Small框架</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/01/22/使用-git-以子目录形式引入外部项目/" rel="next" title="使用 git 以子目录形式引入外部项目">
+                <i class="fa fa-chevron-left"></i> 使用 git 以子目录形式引入外部项目
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/04/Android-Small-源码分析(二)-插件加载过程/" rel="prev" title="Android Small 源码分析(二) 插件加载过程">
+                Android Small 源码分析(二) 插件加载过程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="Kuwork" />
+          <p class="site-author-name" itemprop="name">Kuwork</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text"></span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#一-Small-启动流程"><span class="nav-number"></span> <span class="nav-text">一. Small 启动流程</span></a></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuwork</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

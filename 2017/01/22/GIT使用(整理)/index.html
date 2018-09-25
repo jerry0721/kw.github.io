@@ -1,0 +1,789 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="submodule,GIT,subtree," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="这篇东西是根据我以前写的思维导图整理得来的，大致收集了几种场景以供不时之需。 简要介绍工作区和暂存区的定义首先我们来看一下git的基本目录结构，在你转换一个普通目录以前，是看不到.git文件夹的，git init 之后就会产生，Linux或者Mac下属于隐藏文件夹，在Windows下容易Ctrl+A随手就删掉了，删除时留心一下。   工作区（Working Directory）：就是你在电脑里能看">
+<meta name="keywords" content="submodule,GIT,subtree">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GIT使用(整理)">
+<meta property="og:url" content="https://kuwork.github.io/2017/01/22/GIT使用(整理)/index.html">
+<meta property="og:site_name" content="K.W. 时间囊">
+<meta property="og:description" content="这篇东西是根据我以前写的思维导图整理得来的，大致收集了几种场景以供不时之需。 简要介绍工作区和暂存区的定义首先我们来看一下git的基本目录结构，在你转换一个普通目录以前，是看不到.git文件夹的，git init 之后就会产生，Linux或者Mac下属于隐藏文件夹，在Windows下容易Ctrl+A随手就删掉了，删除时留心一下。   工作区（Working Directory）：就是你在电脑里能看">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-b3802e34ff6b868e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-1a4b894c8278b34b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/600/q/50">
+<meta property="og:image" content="http://ohwckujsu.bkt.clouddn.com/Git.svg">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-cb3507864f7f5a6d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/400">
+<meta property="og:updated_time" content="2018-09-25T07:16:20.389Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GIT使用(整理)">
+<meta name="twitter:description" content="这篇东西是根据我以前写的思维导图整理得来的，大致收集了几种场景以供不时之需。 简要介绍工作区和暂存区的定义首先我们来看一下git的基本目录结构，在你转换一个普通目录以前，是看不到.git文件夹的，git init 之后就会产生，Linux或者Mac下属于隐藏文件夹，在Windows下容易Ctrl+A随手就删掉了，删除时留心一下。   工作区（Working Directory）：就是你在电脑里能看">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/3020228-b3802e34ff6b868e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://kuwork.github.io/2017/01/22/GIT使用(整理)/"/>
+
+
+
+
+
+  <title> GIT使用(整理) | K.W. 时间囊 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">K.W. 时间囊</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">停下来休息的时候,不要忘记别人还在奔跑</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://kuwork.github.io/2017/01/22/GIT使用(整理)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kuwork">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="K.W. 时间囊">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                GIT使用(整理)
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-22T16:48:00+08:00">
+                2017-01-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/开发工具/" itemprop="url" rel="index">
+                    <span itemprop="name">开发工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id=""><a href="#" class="headerlink" title=""></a><img src="http://upload-images.jianshu.io/upload_images/3020228-b3802e34ff6b868e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></h2><p>这篇东西是根据我以前写的<a href="http://ohwckujsu.bkt.clouddn.com/GIT%E4%BD%BF%E7%94%A8-%E6%95%B4%E7%90%86.svg" target="_blank" rel="noopener">思维导图</a>整理得来的，大致收集了几种场景以供不时之需。<br><img src="http://upload-images.jianshu.io/upload_images/3020228-1a4b894c8278b34b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/600/q/50" alt=""></p>
+<h1 id="简要介绍"><a href="#简要介绍" class="headerlink" title="简要介绍"></a>简要介绍</h1><h2 id="工作区和暂存区的定义"><a href="#工作区和暂存区的定义" class="headerlink" title="工作区和暂存区的定义"></a>工作区和暂存区的定义</h2><p>首先我们来看一下git的基本目录结构，在你转换一个普通目录以前，是看不到.git文件夹的，git init 之后就会产生，Linux或者Mac下属于隐藏文件夹，在Windows下容易Ctrl+A随手就删掉了，删除时留心一下。</p>
+<p><img src="http://ohwckujsu.bkt.clouddn.com/Git.svg" alt=""></p>
+<ul>
+<li><strong>工作区（Working Directory）</strong>：就是你在电脑里能看到的目录</li>
+<li><strong>版本库（Repository）</strong>：工作区有一个隐藏目录.git，这个不算工作区，而是Git的版本库。<br>Git的版本库里存了很多东西，其中最重要的就是称为stage（或者叫index）的暂存区，还有Git为我们自动创建的第一个分支master，以及指向master的一个指针叫HEAD。</li>
+</ul>
+<h2 id="HEAD指针"><a href="#HEAD指针" class="headerlink" title="HEAD指针"></a>HEAD指针</h2><p>在Git中，用HEAD表示当前版本，也就是最新的提交3628164…882e1e0（注意我的提交ID和你的肯定不一样），上一个版本就是<strong>HEAD^</strong>，上上一个版本就是<strong>HEAD^^</strong>，当然往上100个版本写100个^比较容易数不过来，所以写成<strong>HEAD~100</strong>。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-cb3507864f7f5a6d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/400" alt=""></p>
+<p>当执行git reset命令时，git会把老的HEAD拷贝到文件.git/ORIG_HEAD中，在命令中可以使用ORIG_HEAD引用这个commit.</p>
+<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><ul>
+<li>git status 查看当前状态</li>
+<li>git add 把文件修改添加到暂存区</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 单独添加文件</span></span><br><span class="line">git add README</span><br><span class="line"><span class="comment"># 添加所有更改的文件</span></span><br><span class="line">git add .</span><br></pre></td></tr></table></figure>
+<ul>
+<li>git commit 把暂存区的所有内容提交到当前分支</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在add完之后使用，提交修改</span></span><br><span class="line">git commit -m <span class="string">"注释"</span></span><br><span class="line"><span class="comment"># 将在跟踪中的文件一次性提交</span></span><br><span class="line">git commit -a -m <span class="string">"注释"</span></span><br><span class="line"><span class="comment"># 使用上一次的提交信息重新提交</span></span><br><span class="line">git commit -a -c</span><br></pre></td></tr></table></figure>
+<ul>
+<li>git diff</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 对比工作区和版本库里面最新版本</span></span><br><span class="line"> git diff HEAD -- filename</span><br></pre></td></tr></table></figure>
+<ul>
+<li>git reset</li>
+</ul>
+<p>不同参数的说明：</p>
+<p>  A. –hard：重设（reset） index和working directory，自从<commit>以来在working directory中的任何改变都被丢弃，并把HEAD指向<commit>。</commit></commit></p>
+<p>  B. –soft：index和working directory中的内容不作任何改变，仅仅把HEAD指向<commit>。这个模式的效果是，执行完毕后，自从<commit>以来的所有改变都会显示在git status的”Changes to be committed”中。</commit></commit></p>
+<p>  C. –mixed：仅reset index，但是不reset working directory。这个模式是默认模式，即当不显示告知git reset模式时，会使用mixed模式。这个模式的效果是，working directory中文件的修改都会被保留，不会丢弃，但是也不会被标记成”Changes to be committed”，但是会打出什么还未被更新的报告。</p>
+<p>  D.–merge：避免在回滚时清除working tree</p>
+<p>  E. –keep:把在某一版本之后的commit清除掉，但是保持working tree不变</p>
+<ul>
+<li>git log</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 单行 精简显示commit记录</span></span><br><span class="line">git <span class="built_in">log</span> --pretty=oneline --abbrev-commit</span><br></pre></td></tr></table></figure>
+<p>还有一些美化的用法，可以百度一下。这里不讲了</p>
+<hr>
+<p>接下来讲一下，使用git开发的各种情景。在搭建好git环境以后，可以针对各种情景快速熟悉git操作。</p>
+<h1 id="情景一-创建版本库"><a href="#情景一-创建版本库" class="headerlink" title="情景一:  创建版本库"></a>情景一:  创建版本库</h1><p>如果你已经有一个项目文件夹或者创建一个空文件夹，进入文件夹创建本地Git仓库来进行版本管理。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建文件夹</span></span><br><span class="line">mkdir floder</span><br><span class="line"><span class="comment"># 进入文件夹</span></span><br><span class="line"><span class="built_in">cd</span> floder</span><br><span class="line"><span class="comment"># git初始化</span></span><br><span class="line">git init</span><br></pre></td></tr></table></figure>
+<p>或者你可以clone一个远程仓库到本地。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 存在远程仓库，从远程拷贝</span></span><br><span class="line">git <span class="built_in">clone</span> git@github.com:michaelliao/gitskills.git</span><br><span class="line"><span class="comment"># 关联到远程的空仓库</span></span><br><span class="line">git remote add origin git@github.com:michaelliao/learngit.git</span><br><span class="line"><span class="comment"># 将本地版本仓库推送到远程仓库</span></span><br><span class="line">git push origin mater</span><br></pre></td></tr></table></figure>
+<h1 id="情景二-提交修改"><a href="#情景二-提交修改" class="headerlink" title="情景二:提交修改"></a>情景二:提交修改</h1><p>修改readme.txt文件之后，提交到本地仓库。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加readme.txt到缓存区</span></span><br><span class="line">git add readme.txt</span><br><span class="line"><span class="comment"># 提交缓存区到版本库的当前支线</span></span><br><span class="line">git commit -m <span class="string">"添加一个说明文件"</span></span><br></pre></td></tr></table></figure>
+<p>添加所有修改的文件，提交到本地仓库。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加所有更改到缓存区</span></span><br><span class="line">git add .</span><br><span class="line"><span class="comment"># 提交缓存区到版本库的当前支线</span></span><br><span class="line">git commit -m <span class="string">"注释"</span></span><br></pre></td></tr></table></figure>
+<p>跳过暂存，直接提交所有修改到本地仓库。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 直接提交本地的修改到当前支线</span></span><br><span class="line">git commit -a -m <span class="string">"注释"</span></span><br></pre></td></tr></table></figure>
+<h1 id="情景三-撤销文件最近一次修改"><a href="#情景三-撤销文件最近一次修改" class="headerlink" title="情景三:撤销文件最近一次修改"></a>情景三:撤销文件最近一次修改</h1><p>常常发现自己错误的修改了一下文件，而它偏偏又commit了，除了查看修改进行恢复,还可以直接恢复。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 从暂存或者版本库恢复到修改前</span></span><br><span class="line">git checkout -- readme.txt</span><br></pre></td></tr></table></figure>
+<p>readme.txt自修改后还<strong>没有被放到暂存区</strong>，现在，撤销修改就回到和版本库一模一样的状态；</p>
+<p>readme.txt已经<strong>添加到暂存区</strong>后，又作了修改，现在，撤销修改就回到添加到暂存区后的状态。</p>
+<p><strong>git checkout – file命令中的–很重要，没有–，就变成了“创建一个新分支”的命令</strong></p>
+<h1 id="情景四-发现当前的修改已经背离原意，一切回到当前版本"><a href="#情景四-发现当前的修改已经背离原意，一切回到当前版本" class="headerlink" title="情景四:发现当前的修改已经背离原意，一切回到当前版本"></a>情景四:发现当前的修改已经背离原意，一切回到当前版本</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 放弃当前工作区以及缓存区的修改，恢复到当前版本</span></span><br><span class="line">git reset --hard HEAD</span><br></pre></td></tr></table></figure>
+<h1 id="情景五-发现之前的提交都是错误的，回到正确的版本"><a href="#情景五-发现之前的提交都是错误的，回到正确的版本" class="headerlink" title="情景五:发现之前的提交都是错误的，回到正确的版本"></a>情景五:发现之前的提交都是错误的，回到正确的版本</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 放弃当前工作区以及缓存区的修改，恢复到上一个版本</span></span><br><span class="line">git reset --hard HEAD^</span><br><span class="line"><span class="comment"># 放弃当前工作区以及缓存区的修改，恢复到上上个版本</span></span><br><span class="line">git reset --hard HEAD^^</span><br><span class="line"><span class="comment"># 放弃当前工作区以及缓存区的修改，恢复到特定版本</span></span><br><span class="line">git reset --hard SHA1</span><br></pre></td></tr></table></figure>
+<h1 id="情景六-并行开发"><a href="#情景六-并行开发" class="headerlink" title="情景六:并行开发"></a>情景六:并行开发</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 从当前分支中新建分支feature1-1,并切换到feature1-1分支</span></span><br><span class="line">git checkout -b  feature1-1</span><br><span class="line"><span class="comment"># 开发..</span></span><br><span class="line">...</span><br><span class="line"><span class="comment"># 各种commit 之后,回到master分支</span></span><br><span class="line">git checkout master</span><br><span class="line"><span class="comment"># 将feature1-1分支合并到master分支(合并分支时，如果可能，Git会用Fast forward模式，</span></span><br><span class="line"><span class="comment"># 但这种模式下，删除分支后，会丢掉分支信息;git log 看不到分支的提交历史)</span></span><br><span class="line">git merge feature1-1</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 从当前分支中新建分支feature1-1,并切换到feature1-1分支</span></span><br><span class="line">git checkout -b  feature1-1</span><br><span class="line"><span class="comment"># 开发..</span></span><br><span class="line">...</span><br><span class="line"><span class="comment"># 各种commit 之后,回到master分支</span></span><br><span class="line">git checkout master</span><br><span class="line"><span class="comment"># 将feature1-1分支合并到master分支(请注意--no-ff参数，表示禁用Fast forward：)</span></span><br><span class="line">git merge --no-ff -m <span class="string">"merge with no-ff"</span> feature1-1</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将feature1-1分支的文件filename检出到当前分支</span></span><br><span class="line">git checkout feature1-1 -- filename</span><br></pre></td></tr></table></figure>
+<h1 id="情景七-发现最近的几次提交不属于当前支线，应该另辟一条支线"><a href="#情景七-发现最近的几次提交不属于当前支线，应该另辟一条支线" class="headerlink" title="情景七:发现最近的几次提交不属于当前支线，应该另辟一条支线"></a>情景七:发现最近的几次提交不属于当前支线，应该另辟一条支线</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建新的分支feature</span></span><br><span class="line">git branch feature1</span><br><span class="line"><span class="comment">#放弃当前分支的3次版本修改</span></span><br><span class="line">git reset --hard~3</span><br><span class="line"><span class="comment">#切换到feature1分支继续开发</span></span><br><span class="line">git checkout feature1</span><br></pre></td></tr></table></figure>
+<h1 id="情景八-提交之后，发现代码没有完整提交，想重新编辑后提交"><a href="#情景八-提交之后，发现代码没有完整提交，想重新编辑后提交" class="headerlink" title="情景八:提交之后，发现代码没有完整提交，想重新编辑后提交"></a>情景八:提交之后，发现代码没有完整提交，想重新编辑后提交</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 最近一次提交代码到版本库</span></span><br><span class="line">		git commit ...</span><br><span class="line"><span class="comment"># 保持working tree不变，回到上一个版本</span></span><br><span class="line">git reset --soft HEAD^</span><br><span class="line"><span class="comment"># 修改文件</span></span><br><span class="line">...</span><br><span class="line"><span class="comment"># 重新使用之前那次commit的注释、作者、日期等信息,</span></span><br><span class="line"><span class="comment"># 把所有修改、删除的文件(不含未跟踪文件)重新提交.</span></span><br><span class="line">git commit -a -c ORIG_HEAD</span><br></pre></td></tr></table></figure>
+<h1 id="情景九-放弃最近的几个版本，需要记录此次改变"><a href="#情景九-放弃最近的几个版本，需要记录此次改变" class="headerlink" title="情景九:放弃最近的几个版本，需要记录此次改变"></a>情景九:放弃最近的几个版本，需要记录此次改变</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 放弃最近的三个版本,并生成一次commit</span></span><br><span class="line">git revert HEAD~3</span><br><span class="line"><span class="comment"># 放弃最近的第五个到第二个(不包含)，但不自动生成commit，仅仅修改index和working tree</span></span><br><span class="line">git revert -n master~5..master~2</span><br></pre></td></tr></table></figure>
+<h1 id="情景十-完成分支开发，删除分支"><a href="#情景十-完成分支开发，删除分支" class="headerlink" title="情景十:完成分支开发，删除分支"></a>情景十:完成分支开发，删除分支</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 删除本地分支</span></span><br><span class="line">git branch -d  feature1-1</span><br><span class="line"><span class="comment"># 删除远程分支</span></span><br><span class="line">git branch -D feature1-1</span><br></pre></td></tr></table></figure>
+<h1 id="情景十一-标签的使用"><a href="#情景十一-标签的使用" class="headerlink" title="情景十一:标签的使用"></a>情景十一:标签的使用</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在当前支线的最近commit上打上"v1.0"的标签</span></span><br><span class="line">git tag v1.0</span><br><span class="line"><span class="comment"># 在SHA1对应的commit上打上"v1.0"的标签</span></span><br><span class="line">git tag v1.0 SHA1</span><br><span class="line"><span class="comment"># 查看标签V1.0的信息</span></span><br><span class="line">git show v1.0</span><br></pre></td></tr></table></figure>
+<h1 id="情景十二-当前开发工作还不能提交到版本库，但迫切开启fixbug支线"><a href="#情景十二-当前开发工作还不能提交到版本库，但迫切开启fixbug支线" class="headerlink" title="情景十二:当前开发工作还不能提交到版本库，但迫切开启fixbug支线"></a>情景十二:当前开发工作还不能提交到版本库，但迫切开启fixbug支线</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 保存当前工作空间进栈</span></span><br><span class="line">git stash</span><br><span class="line"><span class="comment"># 切换到主线，工作区的内容丢失</span></span><br><span class="line">git checkout master</span><br><span class="line"><span class="comment"># 进行修复工作</span></span><br><span class="line">...</span><br><span class="line"><span class="comment"># 重新切换到之前的支线dev</span></span><br><span class="line">git checkout dev</span><br><span class="line"><span class="comment"># 列出栈中内容</span></span><br><span class="line">git stash list</span><br><span class="line"><span class="comment"># 工作区的内容出栈</span></span><br><span class="line">git stash pop</span><br><span class="line">git stash apply stash@&#123;0&#125;</span><br><span class="line">git stash drop stash@&#123;0&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="情景十三-多库项目独立管理"><a href="#情景十三-多库项目独立管理" class="headerlink" title="情景十三:多库项目独立管理"></a>情景十三:多库项目独立管理</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># url：项目路径 path：本地路径</span></span><br><span class="line">git submodule add url path</span><br><span class="line"><span class="comment"># 模块列表</span></span><br><span class="line">git submodule</span><br><span class="line"><span class="comment"># 第一次导入项目需要初始化</span></span><br><span class="line">git submodule init</span><br><span class="line"><span class="comment"># 更新所有的模块</span></span><br><span class="line">git submodule update</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/submodule/" rel="tag"># submodule</a>
+          
+            <a href="/tags/GIT/" rel="tag"># GIT</a>
+          
+            <a href="/tags/subtree/" rel="tag"># subtree</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/01/09/Android开发命名规范及部分图标准则/" rel="next" title="Android开发命名规范及部分图标准则">
+                <i class="fa fa-chevron-left"></i> Android开发命名规范及部分图标准则
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/01/22/在SourceTree中使用Git-Submodule/" rel="prev" title="在SourceTree中使用Git Submodule">
+                在SourceTree中使用Git Submodule <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="Kuwork" />
+          <p class="site-author-name" itemprop="name">Kuwork</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#"><span class="nav-number">1.</span> <span class="nav-text"></span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#简要介绍"><span class="nav-number"></span> <span class="nav-text">简要介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#工作区和暂存区的定义"><span class="nav-number">1.</span> <span class="nav-text">工作区和暂存区的定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HEAD指针"><span class="nav-number">2.</span> <span class="nav-text">HEAD指针</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用命令"><span class="nav-number">3.</span> <span class="nav-text">常用命令</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#情景一-创建版本库"><span class="nav-number"></span> <span class="nav-text">情景一:  创建版本库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#情景二-提交修改"><span class="nav-number"></span> <span class="nav-text">情景二:提交修改</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#情景三-撤销文件最近一次修改"><span class="nav-number"></span> <span class="nav-text">情景三:撤销文件最近一次修改</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#情景四-发现当前的修改已经背离原意，一切回到当前版本"><span class="nav-number"></span> <span class="nav-text">情景四:发现当前的修改已经背离原意，一切回到当前版本</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#情景五-发现之前的提交都是错误的，回到正确的版本"><span class="nav-number"></span> <span class="nav-text">情景五:发现之前的提交都是错误的，回到正确的版本</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#情景六-并行开发"><span class="nav-number"></span> <span class="nav-text">情景六:并行开发</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#情景七-发现最近的几次提交不属于当前支线，应该另辟一条支线"><span class="nav-number"></span> <span class="nav-text">情景七:发现最近的几次提交不属于当前支线，应该另辟一条支线</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#情景八-提交之后，发现代码没有完整提交，想重新编辑后提交"><span class="nav-number"></span> <span class="nav-text">情景八:提交之后，发现代码没有完整提交，想重新编辑后提交</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#情景九-放弃最近的几个版本，需要记录此次改变"><span class="nav-number"></span> <span class="nav-text">情景九:放弃最近的几个版本，需要记录此次改变</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#情景十-完成分支开发，删除分支"><span class="nav-number"></span> <span class="nav-text">情景十:完成分支开发，删除分支</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#情景十一-标签的使用"><span class="nav-number"></span> <span class="nav-text">情景十一:标签的使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#情景十二-当前开发工作还不能提交到版本库，但迫切开启fixbug支线"><span class="nav-number"></span> <span class="nav-text">情景十二:当前开发工作还不能提交到版本库，但迫切开启fixbug支线</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#情景十三-多库项目独立管理"><span class="nav-number"></span> <span class="nav-text">情景十三:多库项目独立管理</span></a></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuwork</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

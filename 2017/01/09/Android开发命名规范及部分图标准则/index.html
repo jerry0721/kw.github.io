@@ -1,0 +1,1501 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="这里统一使用的命名规则作为开发组内进行沟通使用，约定俗成，仅供参考。 英文缩写原则 较短的单词可通过去掉”元音”形成缩写 较长的单词可取单词的头几个字母形成缩写 此外还有一些约定成俗的英文单词缩写.  若是缩减的单词容易造成误解的，应保留完整单词。 下面为常见的英文单词缩写:    名称 缩写 备注     icon ic （主要用在app的图标）   color cl （主要用于颜色值，建议不缩">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android开发命名规范及部分图标准则">
+<meta property="og:url" content="https://kuwork.github.io/2017/01/09/Android开发命名规范及部分图标准则/index.html">
+<meta property="og:site_name" content="K.W. 时间囊">
+<meta property="og:description" content="这里统一使用的命名规则作为开发组内进行沟通使用，约定俗成，仅供参考。 英文缩写原则 较短的单词可通过去掉”元音”形成缩写 较长的单词可取单词的头几个字母形成缩写 此外还有一些约定成俗的英文单词缩写.  若是缩减的单词容易造成误解的，应保留完整单词。 下面为常见的英文单词缩写:    名称 缩写 备注     icon ic （主要用在app的图标）   color cl （主要用于颜色值，建议不缩">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-f9eaa79fba3e109c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-8b007c2612cbe6b2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-6ea486a150de5424.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-6f1e3b71df1b7f4f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-fe19e0fc2f393ec7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-9d9465ff4b56f8a4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-f0154390e6deca8a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-adee9d8e1f891865.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-8ec30ef00b5b2a75.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-09-25T07:15:54.539Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android开发命名规范及部分图标准则">
+<meta name="twitter:description" content="这里统一使用的命名规则作为开发组内进行沟通使用，约定俗成，仅供参考。 英文缩写原则 较短的单词可通过去掉”元音”形成缩写 较长的单词可取单词的头几个字母形成缩写 此外还有一些约定成俗的英文单词缩写.  若是缩减的单词容易造成误解的，应保留完整单词。 下面为常见的英文单词缩写:    名称 缩写 备注     icon ic （主要用在app的图标）   color cl （主要用于颜色值，建议不缩">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/3020228-f9eaa79fba3e109c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://kuwork.github.io/2017/01/09/Android开发命名规范及部分图标准则/"/>
+
+
+
+
+
+  <title> Android开发命名规范及部分图标准则 | K.W. 时间囊 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">K.W. 时间囊</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">停下来休息的时候,不要忘记别人还在奔跑</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://kuwork.github.io/2017/01/09/Android开发命名规范及部分图标准则/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kuwork">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="K.W. 时间囊">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android开发命名规范及部分图标准则
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-09T13:40:57+08:00">
+                2017-01-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这里统一使用的命名规则作为开发组内进行沟通使用，约定俗成，仅供参考。</p>
+<h1 id="英文缩写原则"><a href="#英文缩写原则" class="headerlink" title="英文缩写原则"></a>英文缩写原则</h1><ol>
+<li>较短的单词可通过去掉”元音”形成缩写</li>
+<li>较长的单词可取单词的头几个字母形成缩写</li>
+<li>此外还有一些约定成俗的英文单词缩写.</li>
+</ol>
+<p><strong>若是缩减的单词容易造成误解的，应保留完整单词。</strong></p>
+<p>下面为常见的英文单词缩写:</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>缩写</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>icon</td>
+<td>ic</td>
+<td>（主要用在app的图标）</td>
+</tr>
+<tr>
+<td>color</td>
+<td>cl</td>
+<td>（主要用于颜色值，建议不缩写）</td>
+</tr>
+<tr>
+<td>divider</td>
+<td>di</td>
+<td>（主要用于分隔线，不仅包括Listview中的divider，还包括普通布局中的线，建议不缩写）</td>
+</tr>
+<tr>
+<td>selector</td>
+<td>sl</td>
+<td>（主要用于某一view多种状态，不仅包括Listview中的selector，还包括按钮的selector，建议不缩写）</td>
+</tr>
+<tr>
+<td>average</td>
+<td>avg</td>
+<td></td>
+</tr>
+<tr>
+<td>background</td>
+<td>bg</td>
+<td>（主要用于布局和子布局的背景）</td>
+</tr>
+<tr>
+<td>buffer</td>
+<td>buf</td>
+<td></td>
+</tr>
+<tr>
+<td>control</td>
+<td>ctrl</td>
+<td></td>
+</tr>
+<tr>
+<td>delete</td>
+<td>del</td>
+<td>(主要用于布局ID)</td>
+</tr>
+<tr>
+<td>document</td>
+<td>doc</td>
+<td></td>
+</tr>
+<tr>
+<td>error</td>
+<td>err</td>
+<td>(主要用于String.xml)</td>
+</tr>
+<tr>
+<td>escape</td>
+<td>esc</td>
+<td></td>
+</tr>
+<tr>
+<td>increment</td>
+<td>inc</td>
+<td></td>
+</tr>
+<tr>
+<td>infomation</td>
+<td>info</td>
+<td></td>
+</tr>
+<tr>
+<td>initial</td>
+<td>init</td>
+<td></td>
+</tr>
+<tr>
+<td>image</td>
+<td>img</td>
+<td>(主要用于资源ID)</td>
+</tr>
+<tr>
+<td>Internationalization</td>
+<td>I18N</td>
+<td></td>
+</tr>
+<tr>
+<td>length</td>
+<td>len</td>
+<td></td>
+</tr>
+<tr>
+<td>library</td>
+<td>lib</td>
+<td></td>
+</tr>
+<tr>
+<td>message</td>
+<td>msg</td>
+<td></td>
+</tr>
+<tr>
+<td>password</td>
+<td>pwd</td>
+<td></td>
+</tr>
+<tr>
+<td>position</td>
+<td>pos</td>
+<td></td>
+</tr>
+<tr>
+<td>server</td>
+<td>srv</td>
+<td></td>
+</tr>
+<tr>
+<td>string</td>
+<td>str</td>
+<td></td>
+</tr>
+<tr>
+<td>temp</td>
+<td>tmp</td>
+<td></td>
+</tr>
+<tr>
+<td>window</td>
+<td>wnd(win)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h1 id="包（packages）"><a href="#包（packages）" class="headerlink" title="包（packages）"></a>包（packages）</h1><p>全部使用小写字母。一级包名常见的有：com/cn/org/net，二级包名以公司或个人来命名，三级包名根据应用进行命名，四级包名为模块名或层级名。</p>
+<p>例如： com.classic.stock com.classic.stock.user</p>
+<h1 id="类（classes）"><a href="#类（classes）" class="headerlink" title="类（classes）"></a>类（classes）</h1><p>采用大驼峰命名法，所有单词的首字母大写，尽量避免缩写，除非该缩写是众所周知的， 比如HTML,URL，如果类名称中包含单词缩写，则单词缩写的每个字母均应大写。</p>
+<p>例如：</p>
+<table>
+<thead>
+<tr>
+<th><strong>类</strong></th>
+<th><strong>描述</strong></th>
+<th><strong>例如</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>activity 类</td>
+<td>Activity为后缀标识</td>
+<td>欢迎页面类WelcomeActivity</td>
+</tr>
+<tr>
+<td>Adapter类</td>
+<td>Adapter 为后缀标识</td>
+<td>新闻详情适配器 NewDetailAdapter</td>
+</tr>
+<tr>
+<td>解析类</td>
+<td>Hlr为后缀标识</td>
+<td>首页解析类HomePosterHlr</td>
+</tr>
+<tr>
+<td>公共方法类</td>
+<td>Tools、Utils或Manager为后缀标识</td>
+<td>线程池管理类：ThreadPoolManager<br></td>
+</tr>
+</tbody>
+</table>
+<p>日志工具类：DateTools、LogUtils<br>数据库类               | 以DBHelper后缀标识            | 新闻数据库：NewDBHelper<br>Service类           | 以Service为后缀标识            | 时间服务TimeService<br>BroadcastReceiver类 | 以Receiver为后缀标识           | 时间通知TimeReceiver<br>数据共享类              | 以Provider为后缀标识           | ContentProvider<br>共享基础类              | 以Base开头                  | BaseActivity,BaseFragment,BaseAdapter</p>
+<h1 id="接口（interface）"><a href="#接口（interface）" class="headerlink" title="接口（interface）"></a>接口（interface）</h1><p>接口名称以 I 开头，如果有多个单词，每个单词首字母大写，命名规则与类一样采用大驼峰命名法，多以able或ible结尾，如interface Runnable ;</p>
+<table>
+<thead>
+<tr>
+<th><strong>功能</strong></th>
+<th><strong>描述</strong></th>
+<th><strong>例如</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>协议操作</td>
+<td>实现协定的方法，以I开头</td>
+<td>IContract</td>
+</tr>
+<tr>
+<td>回调</td>
+<td>当做参数传入回调，多以Callback结尾</td>
+<td>xUtils:RequestCallback</td>
+</tr>
+<tr>
+<td>子进程操作</td>
+<td>作为线程的事件执行，多以Runnable结尾</td>
+<td>DealContractRunnable</td>
+</tr>
+<tr>
+<td>事件监听器</td>
+<td>以On开头，以Listener结尾</td>
+<td>单击事件：OnClickListener<br></td>
+</tr>
+</tbody>
+</table>
+<p>列表单击事件OnItemClickListener</p>
+<h1 id="方法（methods）"><a href="#方法（methods）" class="headerlink" title="方法（methods）"></a>方法（methods）</h1><p>采用小驼峰命名法，除首单词外，其余所有单词的首字母大写。</p>
+<table>
+<thead>
+<tr>
+<th><strong>方法</strong></th>
+<th><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>initXX()</td>
+<td>初始化相关方法,使用init为前缀标识，如初始化布局initView()</td>
+</tr>
+<tr>
+<td>isXX()</td>
+<td>checkXX()方法返回值为boolean型的请使用is或check为前缀标识</td>
+</tr>
+<tr>
+<td>getXX()</td>
+<td>返回某个值的方法，使用get为前缀标识</td>
+</tr>
+<tr>
+<td>processXX()</td>
+<td>对数据进行处理的方法，尽量使用process为前缀标识</td>
+</tr>
+<tr>
+<td>showXX()</td>
+<td>弹出提示框和提示信息，使用show为前缀标识</td>
+</tr>
+<tr>
+<td>saveXX()</td>
+<td>与保存数据相关的，使用save为前缀标识</td>
+</tr>
+<tr>
+<td>resetXX()</td>
+<td>对数据重组的，使用reset前缀标识</td>
+</tr>
+<tr>
+<td>clearXX()</td>
+<td>清除数据相关的</td>
+</tr>
+<tr>
+<td>removeXXX()</td>
+<td>删除数据相关的</td>
+</tr>
+<tr>
+<td>drawXXX()</td>
+<td>绘制数据或效果相关的，使用draw前缀标识</td>
+</tr>
+<tr>
+<td>getXXX()、setXXX()</td>
+<td>成员变量的Getter、Setter方法，不含有成员变量前缀m</td>
+</tr>
+</tbody>
+</table>
+<h1 id="参数（parameter）"><a href="#参数（parameter）" class="headerlink" title="参数（parameter）"></a>参数（parameter）</h1><p>采用小驼峰命名法 ，除首单词外，其余所有单词的首字母大写，尽量避免使用单字母变量，变量名表面意思能够让人知晓用途，建议用JavaDoc在前面进行注释。</p>
+<table>
+<thead>
+<tr>
+<th><strong>类</strong></th>
+<th><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>page</td>
+<td>页码</td>
+</tr>
+<tr>
+<td>pageSize</td>
+<td>每一页含有的条数</td>
+</tr>
+<tr>
+<td>userName</td>
+<td>用户名</td>
+</tr>
+</tbody>
+</table>
+<h1 id="变量（variables）"><a href="#变量（variables）" class="headerlink" title="变量（variables）"></a>变量（variables）</h1><p>采用小驼峰命名法 ，除首单词外，其余所有单词的首字母大写。</p>
+<table>
+<thead>
+<tr>
+<th><strong>类</strong></th>
+<th><strong>描述</strong></th>
+<th><strong>例如</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>局部变量</td>
+<td>采用小驼峰命名法</td>
+<td>page</td>
+</tr>
+<tr>
+<td>全局变量(成员变量)</td>
+<td>采用小驼峰命名法，以m开头</td>
+<td>mPageSize</td>
+</tr>
+</tbody>
+</table>
+<h1 id="常量（constants）"><a href="#常量（constants）" class="headerlink" title="常量（constants）"></a>常量（constants）</h1><p>全部大写,单词之间用下划线分割。对于通知类，界面传递变量的常量KEY，尽量使用同一常量类进行管理，避免常量值相同造成混淆。</p>
+<table>
+<thead>
+<tr>
+<th><strong>常量</strong></th>
+<th><strong>描述</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DB_VERSION</td>
+<td>数据库版本</td>
+</tr>
+<tr>
+<td>DB_NAME</td>
+<td>数据库名</td>
+</tr>
+<tr>
+<td>SERVER_URL</td>
+<td>服务器地址</td>
+</tr>
+</tbody>
+</table>
+<h1 id="资源文件"><a href="#资源文件" class="headerlink" title="资源文件"></a>资源文件</h1><table>
+<thead>
+<tr>
+<th><strong>用途</strong></th>
+<th><strong>描述</strong></th>
+<th><strong>例如</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>图标图片</td>
+<td>前缀+模块+描述，以ic开头</td>
+<td>ic_main_search.png</td>
+</tr>
+<tr>
+<td>背景图片</td>
+<td>前缀+模块+描述，以bg开头</td>
+<td>bg_banner.png</td>
+</tr>
+<tr>
+<td>Activity Layout布局</td>
+<td>前缀+模块+描述</td>
+<td>activity_main.xml<br></td>
+</tr>
+</tbody>
+</table>
+<p>fragment_main.xml<br><br>dialog_single_input.xml<br>Layout布局          | 模块名称+逻辑名称                      | books_comment.xml<br><br>popup_listview_item.xml<br>Shape文件           | 前缀+模块+逻辑名称，<br><br>放在drawable文件夹下 | 按下前:<br><br>btn_login_normal.xml<br><br>按下时:<br><br>btn_login_pressed.xml<br><br>默认：<br><br>btn_login_default.xml<br><br>不可用：<br><br>btn_login_disable.xml<br>Selector文件        | 前缀+模块，<br><br>放在drawable文件夹下      | selector_login.xml</p>
+<h1 id="Layout中的id命名"><a href="#Layout中的id命名" class="headerlink" title="Layout中的id命名"></a>Layout中的id命名</h1><p>建议用layout文件名称做view+逻辑名称缩写,同一布局内不要重复,使用不易混淆的已使用过的ID（避免给aaa,bbb,ccc，过短的或者没意义的命名方式），尽量使用长名称，均以”@+id”开头，<strong>页面控件名称应该和控件id名保持一致，由于使用ButterKnife工具导入，建议使用小驼峰法命名，才符合变量命名</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>用途</strong></th>
+<th><strong>描述</strong></th>
+<th><strong>例如</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>图片ImageView</td>
+<td>控件缩写+属性+(逻辑模块,多页面使用可无)</td>
+<td>@+id/imgHeaderListViewItem</td>
+</tr>
+<tr>
+<td>文本TextView</td>
+<td>控件缩写+属性+(逻辑模块,多页面使用可无)</td>
+<td>@+id/tvListViewItem</td>
+</tr>
+<tr>
+<td>复选框CheckBox</td>
+<td>控件缩写+属性+(逻辑模块,多页面使用可无)</td>
+<td>@+id/checkBoxListViewItem</td>
+</tr>
+<tr>
+<td>LinearLayout</td>
+<td>控件缩写+属性+(逻辑模块,多页面使用可无)</td>
+<td>@+id/ll_content/@+id/layoutContent</td>
+</tr>
+<tr>
+<td>RelativeLayout</td>
+<td>控件缩写+属性+(逻辑模块,多页面使用可无)</td>
+<td>@+id/rl_content/@+id/layoutContent</td>
+</tr>
+</tbody>
+</table>
+<h1 id="资源文件夹的使用"><a href="#资源文件夹的使用" class="headerlink" title="资源文件夹的使用"></a>资源文件夹的使用</h1><p><strong>手机常见分辨率:</strong></p>
+<table>
+<thead>
+<tr>
+<th>分辨率</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>4:3</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>VGA</td>
+<td>640*480 (Video Graphics Array)</td>
+</tr>
+<tr>
+<td>QVGA</td>
+<td>320*240 (Quarter VGA)</td>
+</tr>
+<tr>
+<td>HVGA</td>
+<td>480*320 (Half-size VGA)</td>
+</tr>
+<tr>
+<td>SVGA</td>
+<td>800*600 (Super VGA)</td>
+</tr>
+<tr>
+<td><strong>5:3</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>WVGA</td>
+<td>800*480 (Wide VGA)</td>
+</tr>
+<tr>
+<td><strong>16:9</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>FWVGA</td>
+<td>854*480 (Full Wide VGA)</td>
+</tr>
+<tr>
+<td>HD</td>
+<td>1920*1080(High Definition)</td>
+</tr>
+<tr>
+<td>QHD</td>
+<td>960*540</td>
+</tr>
+<tr>
+<td>720p</td>
+<td>1280*720 标清</td>
+</tr>
+<tr>
+<td>1080p</td>
+<td>1920*1080 高清</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>dpi范围</th>
+<th>密度</th>
+<th>分辨率</th>
+<th>倍数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0dpi ~ 120dpi</td>
+<td>ldpi</td>
+<td>HVGA</td>
+<td>0.75x</td>
+</tr>
+<tr>
+<td>120dpi ~ 160dpi</td>
+<td>mdpi</td>
+<td>HVGA</td>
+<td>1x</td>
+</tr>
+<tr>
+<td>160dpi ~ 240dpi</td>
+<td>hdpi</td>
+<td>WVGA/FWVGA/QHD</td>
+<td>1.5x</td>
+</tr>
+<tr>
+<td>240dpi ~ 320dpi</td>
+<td>xhdpi</td>
+<td>720P</td>
+<td>2x</td>
+</tr>
+<tr>
+<td>320dpi ~ 480dpi</td>
+<td>xxhdpi</td>
+<td>1080P</td>
+<td>3x</td>
+</tr>
+<tr>
+<td>480dpi ~ 640dpi</td>
+<td>xxxhdpi</td>
+<td>1440P</td>
+<td>4x</td>
+</tr>
+</tbody>
+</table>
+<p>项目一般提供3x,2x图，放在响应的文件夹内，新项目使用mipmap文件夹。</p>
+<p><strong>图片放错容易产生的问题是？</strong> 如果将一张图片放在低密度文件夹下，那么在高密度设备上显示图片时就会被自动放大，而如果将一张图片放在高密度文件夹下，那么在低密度设备上显示图片时就会被自动缩小。 一张原图片被缩小了之后显示其实并没有什么副作用，但是一张原图片被放大了之后显示就意味着要占用更多的内存了。</p>
+<p>例如：将android_logo.png图片移动不同位置</p>
+<table>
+<thead>
+<tr>
+<th>情况一</th>
+<th>情况二</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>drawable-xxhdpi</td>
+<td>drawable-mdpi</td>
+</tr>
+<tr>
+<td><img src="http://upload-images.jianshu.io/upload_images/3020228-f9eaa79fba3e109c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></td>
+<td><img src="http://upload-images.jianshu.io/upload_images/3020228-8b007c2612cbe6b2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></td>
+</tr>
+</tbody>
+</table>
+<h1 id="图标大小"><a href="#图标大小" class="headerlink" title="图标大小"></a>图标大小</h1><table>
+<thead>
+<tr>
+<th>DENSITY</th>
+<th>SIZE</th>
+<th>LOCATION</th>
+<th>RATIO</th>
+<th>SCREEN</th>
+<th>MARGIN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>XXXHDPI</td>
+<td>192×192</td>
+<td>drawable-xxxhdpi</td>
+<td>4</td>
+<td>640 DPI</td>
+<td>12 to 16 pixels</td>
+</tr>
+<tr>
+<td>XXHDPI</td>
+<td>144×144</td>
+<td>drawable-xxhdpi</td>
+<td>3</td>
+<td>480 DPI</td>
+<td>8 to 12 pixels</td>
+</tr>
+<tr>
+<td>XHDPI</td>
+<td>96×96</td>
+<td>drawable-xhdpi</td>
+<td>2</td>
+<td>320 DPI</td>
+<td>6 to 8 pixels</td>
+</tr>
+<tr>
+<td>HDPI</td>
+<td>72×72</td>
+<td>drawable-hdpi</td>
+<td>1.5</td>
+<td>240 DPI</td>
+<td>4 to 6 pixels</td>
+</tr>
+<tr>
+<td>MDPI</td>
+<td>48×48</td>
+<td>drawable-mdpi</td>
+<td>1</td>
+<td>160 DPI</td>
+<td>3 to 4 pixels</td>
+</tr>
+<tr>
+<td>MDPI</td>
+<td>48×48</td>
+<td>drawable (Cupcake)</td>
+<td>1</td>
+<td>160 DPI</td>
+<td>3 to 4 pixels</td>
+</tr>
+<tr>
+<td>LDPI</td>
+<td>36×36</td>
+<td>drawable-ldpi</td>
+<td>0.75</td>
+<td>120 DPI</td>
+<td>2 to 3 pixels</td>
+</tr>
+<tr>
+<td>NA</td>
+<td>512×512</td>
+<td>Google Play</td>
+<td>NA</td>
+<td>NA</td>
+<td>As required</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Launcher Icons 放在mipmap中</strong></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-6ea486a150de5424.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="XXXHDPI 192×192"> <img src="http://upload-images.jianshu.io/upload_images/3020228-6f1e3b71df1b7f4f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="XXHDPI 144×144"> <img src="http://upload-images.jianshu.io/upload_images/3020228-fe19e0fc2f393ec7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="XHDPI 96×96"> <img src="http://upload-images.jianshu.io/upload_images/3020228-9d9465ff4b56f8a4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="HDPI 72×72"> <img src="http://upload-images.jianshu.io/upload_images/3020228-f0154390e6deca8a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="MDPI 48×48"></p>
+<p><strong>Notification Icons 放在drawable中</strong></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-adee9d8e1f891865.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-8ec30ef00b5b2a75.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"></p>
+<table>
+<thead>
+<tr>
+<th>DENSITY</th>
+<th>SIZE</th>
+<th>LOCATION</th>
+<th>RATIO</th>
+<th>SCREEN</th>
+<th>MARGIN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>XXHDPI</td>
+<td>75×75</td>
+<td>drawable-xxhdpi</td>
+<td>3</td>
+<td>480 DPI</td>
+<td>15 to 17 pixels</td>
+</tr>
+<tr>
+<td>XXHDPI</td>
+<td>48×75</td>
+<td>drawable-xxhdpi-v9</td>
+<td>3</td>
+<td>480 DPI</td>
+<td>5 to 19 pixels</td>
+</tr>
+<tr>
+<td>XXHDPI</td>
+<td>72×72</td>
+<td>drawable-xxhdpi-v11</td>
+<td>3</td>
+<td>480 DPI</td>
+<td>8 to 11 pixels</td>
+</tr>
+<tr>
+<td>XHDPI</td>
+<td>50×50</td>
+<td>drawable-xhdpi</td>
+<td>2</td>
+<td>320 DPI</td>
+<td>3 to 4 pixels</td>
+</tr>
+<tr>
+<td>XHDPI</td>
+<td>32×50</td>
+<td>drawable-xhdpi-v9</td>
+<td>2</td>
+<td>320 DPI</td>
+<td>3 to 12 pixels</td>
+</tr>
+<tr>
+<td>XHDPI</td>
+<td>48×48</td>
+<td>drawable-xhdpi-v11</td>
+<td>2</td>
+<td>320 DPI</td>
+<td>5 to 6 pixels</td>
+</tr>
+<tr>
+<td>HDPI</td>
+<td>38×38</td>
+<td>drawable-hdpi</td>
+<td>1.5</td>
+<td>240 DPI</td>
+<td>3 pixels</td>
+</tr>
+<tr>
+<td>HDPI</td>
+<td>24×38</td>
+<td>drawable-hdpi-v9</td>
+<td>1.5</td>
+<td>240 DPI</td>
+<td>2 to10 pixels</td>
+</tr>
+<tr>
+<td>HDPI</td>
+<td>36×36</td>
+<td>drawable-hdpi-v11</td>
+<td>1.5</td>
+<td>240 DPI</td>
+<td>3 to 5 pixels</td>
+</tr>
+<tr>
+<td>MDPI</td>
+<td>25×25</td>
+<td>drawable-mdpi</td>
+<td>1</td>
+<td>160 DPI</td>
+<td>2 pixels</td>
+</tr>
+<tr>
+<td>MDPI</td>
+<td>16×23</td>
+<td>drawable-mdpi-v9</td>
+<td>1</td>
+<td>160 DPI</td>
+<td>1 to 6 pixels</td>
+</tr>
+<tr>
+<td>MDPI</td>
+<td>24×24</td>
+<td>drawable-mdpi-v11</td>
+<td>1</td>
+<td>160 DPI</td>
+<td>3 pixels</td>
+</tr>
+</tbody>
+</table>
+<p><strong>ActionBar or Tab Bar Icons 放在drawable中</strong></p>
+<table>
+<thead>
+<tr>
+<th>DENSITY</th>
+<th>SIZE</th>
+<th>LOCATION</th>
+<th>RATIO</th>
+<th>SCREEN</th>
+<th>MARGIN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>XXHDPI</td>
+<td>96×96</td>
+<td>drawable-xxhdpi</td>
+<td>3</td>
+<td>480 DPI</td>
+<td>17 to 19 pixels</td>
+</tr>
+<tr>
+<td>XHDPI</td>
+<td>64×64</td>
+<td>drawable-xhdpi</td>
+<td>2</td>
+<td>320 DPI</td>
+<td>10 to 13 pixels</td>
+</tr>
+<tr>
+<td>HDPI</td>
+<td>48×48</td>
+<td>drawable-hdpi</td>
+<td>1.5</td>
+<td>240 DPI</td>
+<td>8 to 9 pixels</td>
+</tr>
+<tr>
+<td>MDPI</td>
+<td>32×32</td>
+<td>drawable-mdpi</td>
+<td>1</td>
+<td>160 DPI</td>
+<td>6 to 7 pixels</td>
+</tr>
+</tbody>
+</table>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/15/Android插件化历程（Small框架-）/" rel="next" title="Android插件化历程（Small框架 ）">
+                <i class="fa fa-chevron-left"></i> Android插件化历程（Small框架 ）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/01/22/GIT使用(整理)/" rel="prev" title="GIT使用(整理)">
+                GIT使用(整理) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="Kuwork" />
+          <p class="site-author-name" itemprop="name">Kuwork</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#英文缩写原则"><span class="nav-number">1.</span> <span class="nav-text">英文缩写原则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#包（packages）"><span class="nav-number">2.</span> <span class="nav-text">包（packages）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#类（classes）"><span class="nav-number">3.</span> <span class="nav-text">类（classes）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#接口（interface）"><span class="nav-number">4.</span> <span class="nav-text">接口（interface）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#方法（methods）"><span class="nav-number">5.</span> <span class="nav-text">方法（methods）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参数（parameter）"><span class="nav-number">6.</span> <span class="nav-text">参数（parameter）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#变量（variables）"><span class="nav-number">7.</span> <span class="nav-text">变量（variables）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常量（constants）"><span class="nav-number">8.</span> <span class="nav-text">常量（constants）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#资源文件"><span class="nav-number">9.</span> <span class="nav-text">资源文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Layout中的id命名"><span class="nav-number">10.</span> <span class="nav-text">Layout中的id命名</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#资源文件夹的使用"><span class="nav-number">11.</span> <span class="nav-text">资源文件夹的使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#图标大小"><span class="nav-number">12.</span> <span class="nav-text">图标大小</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuwork</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

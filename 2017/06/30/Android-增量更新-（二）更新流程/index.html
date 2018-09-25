@@ -1,0 +1,824 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,增量更新," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="接上一节的内容，通过使用 Bsdiff 可以成功实现拆分和合并了。这个时候就要想一下如何完成整个更新的过程。 必须想清楚的问题这个时候要注意不再是增量拆分，而是如何平滑得实现应用的更新。  优先级问题当检查更新时，存在最新版本的补丁时，优先使用增量更新；如若没有，采用完整更新。 拆分次数问题随着版本不断迭代，由于 Bsdiff 的拆分效能低，不能也没必要做到每个新版本提供以前所有版本的补丁。试想">
+<meta name="keywords" content="Android,增量更新">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android增量更新（二）更新流程">
+<meta property="og:url" content="https://kuwork.github.io/2017/06/30/Android-增量更新-（二）更新流程/index.html">
+<meta property="og:site_name" content="K.W. 时间囊">
+<meta property="og:description" content="接上一节的内容，通过使用 Bsdiff 可以成功实现拆分和合并了。这个时候就要想一下如何完成整个更新的过程。 必须想清楚的问题这个时候要注意不再是增量拆分，而是如何平滑得实现应用的更新。  优先级问题当检查更新时，存在最新版本的补丁时，优先使用增量更新；如若没有，采用完整更新。 拆分次数问题随着版本不断迭代，由于 Bsdiff 的拆分效能低，不能也没必要做到每个新版本提供以前所有版本的补丁。试想">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-c38ad190d8b873ba.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-b70c2c540c0d7d34.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-3de72ae9d669054e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-1c5d3d65f14695e7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-09-25T07:15:48.001Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android增量更新（二）更新流程">
+<meta name="twitter:description" content="接上一节的内容，通过使用 Bsdiff 可以成功实现拆分和合并了。这个时候就要想一下如何完成整个更新的过程。 必须想清楚的问题这个时候要注意不再是增量拆分，而是如何平滑得实现应用的更新。  优先级问题当检查更新时，存在最新版本的补丁时，优先使用增量更新；如若没有，采用完整更新。 拆分次数问题随着版本不断迭代，由于 Bsdiff 的拆分效能低，不能也没必要做到每个新版本提供以前所有版本的补丁。试想">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/3020228-c38ad190d8b873ba.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://kuwork.github.io/2017/06/30/Android-增量更新-（二）更新流程/"/>
+
+
+
+
+
+  <title> Android增量更新（二）更新流程 | K.W. 时间囊 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">K.W. 时间囊</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">停下来休息的时候,不要忘记别人还在奔跑</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://kuwork.github.io/2017/06/30/Android-增量更新-（二）更新流程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kuwork">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="K.W. 时间囊">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android增量更新（二）更新流程
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-30T15:17:57+08:00">
+                2017-06-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://upload-images.jianshu.io/upload_images/3020228-c38ad190d8b873ba.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>接上一节的内容，通过使用 Bsdiff 可以成功实现拆分和合并了。这个时候就要想一下如何完成整个更新的过程。</p>
+<h2 id="必须想清楚的问题"><a href="#必须想清楚的问题" class="headerlink" title="必须想清楚的问题"></a>必须想清楚的问题</h2><p>这个时候要注意不再是增量拆分，而是如何平滑得实现应用的更新。</p>
+<ul>
+<li>优先级问题<br>当检查更新时，存在最新版本的补丁时，优先使用增量更新；如若没有，采用完整更新。</li>
+<li>拆分次数问题<br>随着版本不断迭代，由于 Bsdiff 的拆分效能低，不能也没必要做到每个新版本提供以前所有版本的补丁。<br>试想一下，一个版本越久远越是可能与新版本存在较大差异，补丁包大小逐渐接近完整包大小，再者，App随着apk的Size也随之增加，拆分所需的时间、空间也随之增大，发布新版本的处理时间越来越长，增量更新的优势不复存在了，这是不能接受的。<br>在更新版本的时候给予设置向前比较次数，我以3个月为期，对于每月更新的APP可以设为3次。</li>
+<li>唯一性问题<br>通常情况下，APP 的版本标识是 包名或者是 application id ，版本号，版本号，我则增加一个类型属性，可以理解为渠道名，这是为了解决一些现实的问题，同一APP给不同客户群体使用，例如测试人员和正式用户，测试人员可以收到内部快速迭代的更新包，而不会影响到正式用户，这样可以给特定用户群开放不同的版本功能，并且能够实现阶段性切换产品线。</li>
+<li>完整性检验<br>通过SHA1校验码确认合并前后文件都是一致的，保障合并的成功率</li>
+<li>级联删除<br>可以单独删除补丁包数据，相应版本只支持完整更新了；删除完整包数据，就要附带删除所有相关的补丁包数据，避免导致更新系统混乱。</li>
+</ul>
+<h2 id="界面设计"><a href="#界面设计" class="headerlink" title="界面设计"></a>界面设计</h2><p>目前在用的系统也是由这个雏形发展而来，而我现在并不在负责这个部分的编码，这里公布部分界面以及逻辑原理。<br><img src="http://upload-images.jianshu.io/upload_images/3020228-b70c2c540c0d7d34.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<ul>
+<li>1) 产品管理<br>这里的产品管理是以移动产品为标准划分。<br><strong>产品ID</strong>：自动UUID，在各个系统模块中通用，这里仅用于更新模块，也可用于广告投放模块。<br><strong>产品名称</strong>： 必填<br><strong>产品说明</strong>：一个公司里面可能存在很多类似的产品，用于区分细节。<br><strong>包名</strong>：如果上传的是APK包，则和应用市场类似，可以不填，自动获取第一次上传的application id ，以后通过新增版本页面上传是会对比这个参数，不符合就会上传失败，避免脑抽了，出现严重的问题。<br><strong>云端下载</strong>：自身系统的带宽有限，通过把包放到阿里云或者七牛等地方，减低带宽压力。</li>
+<li>2）版本管理<br>如图所示。这里会在完整包信息之间插入补丁包信息。补丁包信息必须先于版本信息入库，避免出现查询异常。<br><strong>产品名称</strong>：必选<br><strong>版本类型</strong>：必选<br><strong>包名</strong>：自动获取，产品存在包名，将会进行对比，否则记入产品信息中。<br><strong>版本名</strong>：给普通用户查看的版本信息（字符串）。<br><strong>版本号</strong>：int类型，用于升级的版本信息，新上传的版本号必须大于上一版本。<br><strong>备注</strong>：填入升级信息。<br><strong>向前对比版本数量</strong>：月更新产品，建议设为3次，意思是向上对比不多于3个版本号；周更新产品自己酌情处理。<br><strong>SHA1</strong>：当前文件的SHA1校验码。<br><strong>旧版本SHA1</strong>：之前版本的完整包校验码，用于更新查询接口。</li>
+</ul>
+<h2 id="提交新版本过程"><a href="#提交新版本过程" class="headerlink" title="提交新版本过程"></a>提交新版本过程</h2><p><img src="http://upload-images.jianshu.io/upload_images/3020228-3de72ae9d669054e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="版本提交流程"></p>
+<h2 id="接口设计"><a href="#接口设计" class="headerlink" title="接口设计"></a>接口设计</h2><p>检查更新接口拥有4个请求参数，如下</p>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>参数描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>productId</strong></td>
+<td>产品ID</td>
+</tr>
+<tr>
+<td><strong>versionCode</strong></td>
+<td>当前版本号</td>
+</tr>
+<tr>
+<td><strong>type</strong></td>
+<td>版本类型</td>
+</tr>
+<tr>
+<td><strong>oldsha1code</strong></td>
+<td>当前版本的校验码</td>
+</tr>
+</tbody>
+</table>
+<p>返回参数：</p>
+<table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>参数描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>name</strong></td>
+<td>产品ID</td>
+</tr>
+<tr>
+<td><strong>updateType</strong></td>
+<td>更新类型有三种，inc(增量)、full(完整)、noupdate（无更新）</td>
+</tr>
+<tr>
+<td><strong>versionCode</strong></td>
+<td>最新版本号</td>
+</tr>
+<tr>
+<td><strong>versionName</strong></td>
+<td>最新版本名</td>
+</tr>
+<tr>
+<td><strong>size</strong></td>
+<td>long类型，更新包大小</td>
+</tr>
+<tr>
+<td><strong>sizeOriginal</strong></td>
+<td>在增量更新有效时，表示最新包大小</td>
+</tr>
+<tr>
+<td><strong>newSHA</strong></td>
+<td>最新包的SHA1校验码</td>
+</tr>
+<tr>
+<td><strong>increaseSHA</strong></td>
+<td>补丁包的SHA1校验码</td>
+</tr>
+<tr>
+<td><strong>url</strong></td>
+<td>下载链接</td>
+</tr>
+<tr>
+<td><strong>updateList</strong></td>
+<td>更新信息</td>
+</tr>
+</tbody>
+</table>
+<p>在系统中，版本37的SHA1 是 bbc3be08…4f72f41，最新版本是39，SHA1是d53eca….46474811f,从37到39的补丁包的SHA1 是56efbfce….8628。<br>1）情况一 ：可能当前版本和最新版本不存在补丁包，也可能是当前版本的检验码与服务器记录不符，要求完整更新<br>参数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">productId:b6d9f85e...64ef</span><br><span class="line">versionCode:37</span><br><span class="line">type:official</span><br><span class="line">oldsha1code:1c5cae2551....964fcab</span><br></pre></td></tr></table></figure></p>
+<p>接口结果:<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"code"</span>: <span class="number">1000</span>,</span><br><span class="line">    <span class="attr">"updateInfo"</span>: &#123;</span><br><span class="line">        <span class="attr">"name"</span>: <span class="string">"b6d9f85e...64ef"</span>,</span><br><span class="line">        <span class="attr">"updateType"</span>: <span class="string">"full"</span>,</span><br><span class="line">        <span class="attr">"versionCode"</span>: <span class="number">39</span>,</span><br><span class="line">        <span class="attr">"versionName"</span>: <span class="string">"1.3.3"</span>,</span><br><span class="line">        <span class="attr">"size"</span>: <span class="number">20185438</span>,</span><br><span class="line">        <span class="attr">"newSHA"</span>: <span class="string">"d53eca....46474811f"</span>,</span><br><span class="line">        <span class="attr">"url"</span>: <span class="string">"http://xxx.com/files/d53/d53ec/xxxx_1.3.3_39.apk"</span>,</span><br><span class="line">        <span class="attr">"updateList"</span>: [</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">"versionCode"</span>: <span class="number">39</span>,</span><br><span class="line">                <span class="attr">"versionName"</span>: <span class="string">"1.3.3"</span>,</span><br><span class="line">                <span class="attr">"updateContent"</span>: <span class="string">"1.【新增】优化月租续期缴费，新增自然月续期\n2.【优化】优化附近车场列表加载速度\n3.【优化】优化修复车位申请异常信息提示\n我们始终努力改善您的体验，提高稳定性以及性能优化"</span></span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">"versionCode"</span>: <span class="number">38</span>,</span><br><span class="line">                <span class="attr">"versionName"</span>: <span class="string">"1.3.2"</span>,</span><br><span class="line">                <span class="attr">"updateContent"</span>: <span class="string">"1.【新增】预约车位增加车库位置信息和线路导航；\r\n2.【新增】车场列表新增地区选择和条件排序；\r\n3.【优化】优化附近车场信息和显示；\r\n4.【优化】优化月租到期续费；\r\n我们始终努力改善您的体验，提高稳定性以及性能优化。"</span></span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>2） 情况二：增量更新<br>请求参数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">productId:b6d9f85e...64ef</span><br><span class="line">versionCode:37</span><br><span class="line">type:official</span><br><span class="line">oldsha1code:bbc3be08...4f72f41</span><br></pre></td></tr></table></figure></p>
+<p>接口结果：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"code"</span>: <span class="number">1000</span>,</span><br><span class="line">    <span class="attr">"updateInfo"</span>: &#123;</span><br><span class="line">        <span class="attr">"name"</span>: <span class="string">"b6d9f85e...64ef"</span>,</span><br><span class="line">        <span class="attr">"updateType"</span>: <span class="string">"inc"</span>,</span><br><span class="line">        <span class="attr">"versionCode"</span>: <span class="number">39</span>,</span><br><span class="line">        <span class="attr">"versionName"</span>: <span class="string">"1.3.3"</span>,</span><br><span class="line">        <span class="attr">"size"</span>: <span class="number">4049580</span>,</span><br><span class="line">        <span class="attr">"sizeOriginal"</span>: <span class="number">20185438</span>,</span><br><span class="line">        <span class="attr">"newSHA"</span>: <span class="string">"d53eca....46474811f"</span>,</span><br><span class="line">        <span class="attr">"increaseSHA"</span>: <span class="string">"56efbfce....8628"</span>,</span><br><span class="line">        <span class="attr">"url"</span>: <span class="string">"http://xxx.com/files/d53/d53ec/xxxx_37_39.patch"</span>,</span><br><span class="line">        <span class="attr">"updateList"</span>: [</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">"versionCode"</span>: <span class="number">39</span>,</span><br><span class="line">                <span class="attr">"versionName"</span>: <span class="string">"1.3.3"</span>,</span><br><span class="line">                <span class="attr">"updateContent"</span>: <span class="string">"1.【新增】优化月租续期缴费，新增自然月续期\n2.【优化】优化附近车场列表加载速度\n3.【优化】优化修复车位申请异常信息提示\n我们始终努力改善您的体验，提高稳定性以及性能优化"</span></span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">"versionCode"</span>: <span class="number">38</span>,</span><br><span class="line">                <span class="attr">"versionName"</span>: <span class="string">"1.3.2"</span>,</span><br><span class="line">                <span class="attr">"updateContent"</span>: <span class="string">"1.【新增】预约车位增加车库位置信息和线路导航；\r\n2.【新增】车场列表新增地区选择和条件排序；\r\n3.【优化】优化附近车场信息和显示；\r\n4.【优化】优化月租到期续费；\r\n我们始终努力改善您的体验，提高稳定性以及性能优化。"</span></span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>3）情况三：无更新,有两种原因触发，一是最新版本检查更新时出现，也可能是测试版本出现版本号比发布系统上的新。<br>请求参数:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">productId:b6d9f85e...64ef</span><br><span class="line">versionCode:39</span><br><span class="line">type:official</span><br><span class="line">oldsha1code:d53eca....46474811f</span><br></pre></td></tr></table></figure></p>
+<p>接口结果：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"code"</span>: <span class="number">1000</span>,</span><br><span class="line">    <span class="attr">"updateInfo"</span>: &#123;</span><br><span class="line">        <span class="attr">"name"</span>: <span class="string">"b6d9f85e...64ef"</span>,</span><br><span class="line">        <span class="attr">"updateType"</span>: <span class="string">"noupdate"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>注意：不要在同一文件夹下存放过多文件，会导致磁盘查找缓慢。可以利用像上面的方式利用SHA1来分散存储。</strong><br><img src="http://upload-images.jianshu.io/upload_images/3020228-1c5d3d65f14695e7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>服务器这边的情况大致就是这样了，这个只要和后台开发说明白了，很快就能完成，这个接口除了黑盒测试之外，需要仔细过一遍白盒测试，如果存在潜在的问题，会在往后的发布过程中暴露出来，导致严重的更新事故。</p>
+<p>第三部分本来想写APP的更新过程的，细想一下，这些年我换了几种网络框架，大致的逻辑也没什么变化，唯有网络框架变化导致代码重构。除非有迫切的原因，这个部分暂时不会写了。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/增量更新/" rel="tag"># 增量更新</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/06/30/基于RxJava2和RxRelay实现RxBus/" rel="next" title="基于RxJava2和RxRelay实现RxBus">
+                <i class="fa fa-chevron-left"></i> 基于RxJava2和RxRelay实现RxBus
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/12/01/SQLite锁机制/" rel="prev" title="SQLite锁机制">
+                SQLite锁机制 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="Kuwork" />
+          <p class="site-author-name" itemprop="name">Kuwork</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#必须想清楚的问题"><span class="nav-number">1.</span> <span class="nav-text">必须想清楚的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#界面设计"><span class="nav-number">2.</span> <span class="nav-text">界面设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#提交新版本过程"><span class="nav-number">3.</span> <span class="nav-text">提交新版本过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接口设计"><span class="nav-number">4.</span> <span class="nav-text">接口设计</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuwork</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

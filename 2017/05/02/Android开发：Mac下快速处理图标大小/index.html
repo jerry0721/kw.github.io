@@ -1,0 +1,710 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,Mac," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="笔者在Mac下进行开发，UI一般不会具体给到每一个尺寸的图标，自己动手丰衣足食咯。具体的尺寸，先前的文章有给出，Android开发命名规范及部分图标准则。 原理是利用sips命令将图片居中放缩处理(没有做边距处理，需要原图有边距)，涉及简单的 mkdir、awk、xargs 命令。  创建一个makelogo.sh文件，写入下面的代码：123456789101112131415161718192">
+<meta name="keywords" content="Android,Mac">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android开发：Mac下快速处理图标大小">
+<meta property="og:url" content="https://kuwork.github.io/2017/05/02/Android开发：Mac下快速处理图标大小/index.html">
+<meta property="og:site_name" content="K.W. 时间囊">
+<meta property="og:description" content="笔者在Mac下进行开发，UI一般不会具体给到每一个尺寸的图标，自己动手丰衣足食咯。具体的尺寸，先前的文章有给出，Android开发命名规范及部分图标准则。 原理是利用sips命令将图片居中放缩处理(没有做边距处理，需要原图有边距)，涉及简单的 mkdir、awk、xargs 命令。  创建一个makelogo.sh文件，写入下面的代码：123456789101112131415161718192">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-2efb6d1270914def.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-b5c1bab56e5064c0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-e60900621deb1908.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-297ba2f3abe90ceb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-767c244b556839b0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-09-25T07:16:04.280Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android开发：Mac下快速处理图标大小">
+<meta name="twitter:description" content="笔者在Mac下进行开发，UI一般不会具体给到每一个尺寸的图标，自己动手丰衣足食咯。具体的尺寸，先前的文章有给出，Android开发命名规范及部分图标准则。 原理是利用sips命令将图片居中放缩处理(没有做边距处理，需要原图有边距)，涉及简单的 mkdir、awk、xargs 命令。  创建一个makelogo.sh文件，写入下面的代码：123456789101112131415161718192">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/3020228-2efb6d1270914def.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://kuwork.github.io/2017/05/02/Android开发：Mac下快速处理图标大小/"/>
+
+
+
+
+
+  <title> Android开发：Mac下快速处理图标大小 | K.W. 时间囊 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">K.W. 时间囊</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">停下来休息的时候,不要忘记别人还在奔跑</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://kuwork.github.io/2017/05/02/Android开发：Mac下快速处理图标大小/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kuwork">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="K.W. 时间囊">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android开发：Mac下快速处理图标大小
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-02T16:02:57+08:00">
+                2017-05-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://upload-images.jianshu.io/upload_images/3020228-2efb6d1270914def.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>笔者在Mac下进行开发，UI一般不会具体给到每一个尺寸的图标，自己动手丰衣足食咯。<br>具体的尺寸，先前的文章有给出，<a href="http://www.jianshu.com/p/b971818d9ab2" target="_blank" rel="noopener">Android开发命名规范及部分图标准则</a>。</p>
+<p>原理是利用sips命令将图片居中放缩处理(没有做边距处理，需要原图有边距)，涉及简单的 mkdir、awk、xargs 命令。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-b5c1bab56e5064c0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>创建一个makelogo.sh文件，写入下面的代码：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>! /bin/bash</span><br><span class="line"><span class="meta">#</span>测试Demo ./makelogo.sh 1 drawable ic_launcher-web.png ic_launcher.png</span><br><span class="line"><span class="meta">#</span> 1：APK LOGO 2：通知栏图标 3：ActionBar图标</span><br><span class="line">type=$1 </span><br><span class="line">dirname=$2</span><br><span class="line">pic=$3</span><br><span class="line">out=$4</span><br><span class="line">mkdir ./res 1&gt;/dev/null 2&gt;/dev/null</span><br><span class="line">mkdir ./res/$&#123;dirname&#125;-xxhdpi 1&gt;/dev/null 2&gt;/dev/null</span><br><span class="line">mkdir ./res/$&#123;dirname&#125;-xhdpi 1&gt;/dev/null 2&gt;/dev/null</span><br><span class="line">mkdir ./res/$&#123;dirname&#125;-hdpi 1&gt;/dev/null 2&gt;/dev/null</span><br><span class="line">mkdir ./res/$&#123;dirname&#125;-mdpi 1&gt;/dev/null 2&gt;/dev/null</span><br><span class="line">mkdir ./res/$&#123;dirname&#125;-ldpi 1&gt;/dev/null 2&gt;/dev/null</span><br><span class="line"></span><br><span class="line">echo '原图片信息如下：'</span><br><span class="line">ls -lh $pic</span><br><span class="line"></span><br><span class="line">echo '生成图片信息如下：'</span><br><span class="line">if [[ type -eq "1" ]]; then</span><br><span class="line">  mkdir ./res/$&#123;dirname&#125;-xxxhdpi 1&gt;/dev/null 2&gt;/dev/null</span><br><span class="line"><span class="meta">  #</span> LOGO</span><br><span class="line">  sips $pic -Z 192 --out ./res/$&#123;dirname&#125;-xxxhdpi/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line">  sips $pic -Z 144 --out ./res/$&#123;dirname&#125;-xxhdpi/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line">  sips $pic -Z 96 --out ./res/$&#123;dirname&#125;-xhdpi/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line">  sips $pic -Z 72 --out ./res/$&#123;dirname&#125;-hdpi/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line">  sips $pic -Z 48 --out ./res/$&#123;dirname&#125;-mdpi/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line">  sips $pic -Z 36 --out ./res/$&#123;dirname&#125;-ldpi/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line">elif [[ type -eq "2" ]]; then</span><br><span class="line"><span class="meta">  #</span>Notification Icons</span><br><span class="line">  mkdir ./res/$&#123;dirname&#125;-xxhdpi-v9 1&gt;/dev/null 2&gt;/dev/null</span><br><span class="line">  mkdir ./res/$&#123;dirname&#125;-xxhdpi-v11 1&gt;/dev/null 2&gt;/dev/null</span><br><span class="line">  mkdir ./res/$&#123;dirname&#125;-xhdpi-v9 1&gt;/dev/null 2&gt;/dev/null</span><br><span class="line">  mkdir ./res/$&#123;dirname&#125;-xhdpi-v11 1&gt;/dev/null 2&gt;/dev/null</span><br><span class="line">  mkdir ./res/$&#123;dirname&#125;-mdpi-v9 1&gt;/dev/null 2&gt;/dev/null</span><br><span class="line">  mkdir ./res/$&#123;dirname&#125;-mdpi-v11 1&gt;/dev/null 2&gt;/dev/null</span><br><span class="line"></span><br><span class="line">  sips $pic -z 75 75 -p 75 75 --out ./res/$&#123;dirname&#125;-xxhdpi/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line">  sips $pic -z 48 48 -p 75 48 --out ./res/$&#123;dirname&#125;-xxhdpi-v9/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line">  sips $pic -z 72 72 -p 72 72 --out ./res/$&#123;dirname&#125;-xxhdpi-v11/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line">  sips $pic -z 50 50 -p 50 50 --out ./res/$&#123;dirname&#125;-xhdpi/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line">  sips $pic -z 32 32 -p 50 32 --out ./res/$&#123;dirname&#125;-xhdpi-v9/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line">  sips $pic -z 48 48 -p 48 48 --out ./res/$&#123;dirname&#125;-xhdpi-v11/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line">  sips $pic -z 38 38 -p 38 38 --out ./res/$&#123;dirname&#125;-hdpi/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line">  sips $pic -z 24 24 -p 38 24 --out ./res/$&#123;dirname&#125;-hdpi-v9/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line">  sips $pic -z 36 36 -p 36 36 --out ./res/$&#123;dirname&#125;-hdpi-v11/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line">  sips $pic -z 25 25 -p 25 25 --out ./res/$&#123;dirname&#125;-mdpi/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line">  sips $pic -z 16 16 -p 25 16 --out ./res/$&#123;dirname&#125;-mdpi-v9/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line">  sips $pic -z 24 24 -p 24 24 --out ./res/$&#123;dirname&#125;-mdpi-v11/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line"></span><br><span class="line">elif [[ type -eq "3" ]]; then</span><br><span class="line"><span class="meta">  #</span> Actionbar 图标</span><br><span class="line">  sips $pic -Z 96 --out ./res/$&#123;dirname&#125;-xxhdpi/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line">  sips $pic -Z 64 --out ./res/$&#123;dirname&#125;-xhdpi/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line">  sips $pic -Z 48 --out ./res/$&#123;dirname&#125;-hdpi/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line">  sips $pic -Z 32 --out ./res/$&#123;dirname&#125;-mdpi/$out |awk '&#123;print $1&#125;'|sed -n '2p'|xargs ls -lh</span><br><span class="line">fi</span><br></pre></td></tr></table></figure></p>
+<p>赋予执行权限：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod +x ./makelogo.sh</span><br></pre></td></tr></table></figure></p>
+<p>测试前文件如下:</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-e60900621deb1908.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="运行前"></p>
+<p>接下来测试一下，创建通知栏图标，一般放在drawable，需要在res的父目录执行此文件，将“actionbar_camera.png”重命名为“noti_camera.png”放入res各级目录中，执行如下命令：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./makelogo.sh 2 drawable actionbar_camera.png noti_camera.png</span><br></pre></td></tr></table></figure></p>
+<p>执行结果:</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-297ba2f3abe90ceb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>执行后目录结构:</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-767c244b556839b0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/Mac/" rel="tag"># Mac</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/18/Android-GridInputView-密码输入框-车牌输入框-自定义键盘输入-/" rel="next" title="Android GridInputView 密码输入框/车牌输入框 自定义键盘输入">
+                <i class="fa fa-chevron-left"></i> Android GridInputView 密码输入框/车牌输入框 自定义键盘输入
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/06/08/Android-IPC机制（进程间通信）/" rel="prev" title="Android IPC机制（进程间通信）">
+                Android IPC机制（进程间通信） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="Kuwork" />
+          <p class="site-author-name" itemprop="name">Kuwork</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuwork</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

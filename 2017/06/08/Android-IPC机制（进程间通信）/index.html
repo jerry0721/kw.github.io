@@ -1,0 +1,829 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,IPC机制," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="一、 什么是IPC？IPC，全称Inter-Process Communication，字面意思就是进程间通信或者跨进程通信。那什么是进程呢？它和线程有什么暧昧的关系？进程是系统进行资源分配和调度的基本单位，是操作系统结构的基础；早期表现为一个程序，现在可以看作线程的容器。线程是CPU调度的最小单位。一个进程可以包含一个或者多个线程，进程向系统申请资源，线程使用进程拥有的资源。IPC不是And">
+<meta name="keywords" content="Android,IPC机制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android IPC机制（进程间通信）">
+<meta property="og:url" content="https://kuwork.github.io/2017/06/08/Android-IPC机制（进程间通信）/index.html">
+<meta property="og:site_name" content="K.W. 时间囊">
+<meta property="og:description" content="一、 什么是IPC？IPC，全称Inter-Process Communication，字面意思就是进程间通信或者跨进程通信。那什么是进程呢？它和线程有什么暧昧的关系？进程是系统进行资源分配和调度的基本单位，是操作系统结构的基础；早期表现为一个程序，现在可以看作线程的容器。线程是CPU调度的最小单位。一个进程可以包含一个或者多个线程，进程向系统申请资源，线程使用进程拥有的资源。IPC不是And">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-0caa830385c429df.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-82b0dff63c4d1de3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-09-25T07:14:03.797Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android IPC机制（进程间通信）">
+<meta name="twitter:description" content="一、 什么是IPC？IPC，全称Inter-Process Communication，字面意思就是进程间通信或者跨进程通信。那什么是进程呢？它和线程有什么暧昧的关系？进程是系统进行资源分配和调度的基本单位，是操作系统结构的基础；早期表现为一个程序，现在可以看作线程的容器。线程是CPU调度的最小单位。一个进程可以包含一个或者多个线程，进程向系统申请资源，线程使用进程拥有的资源。IPC不是And">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/3020228-0caa830385c429df.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://kuwork.github.io/2017/06/08/Android-IPC机制（进程间通信）/"/>
+
+
+
+
+
+  <title> Android IPC机制（进程间通信） | K.W. 时间囊 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">K.W. 时间囊</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">停下来休息的时候,不要忘记别人还在奔跑</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://kuwork.github.io/2017/06/08/Android-IPC机制（进程间通信）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kuwork">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="K.W. 时间囊">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android IPC机制（进程间通信）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-08T10:41:00+08:00">
+                2017-06-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://upload-images.jianshu.io/upload_images/3020228-0caa830385c429df.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h2 id="一、-什么是IPC？"><a href="#一、-什么是IPC？" class="headerlink" title="一、 什么是IPC？"></a>一、 什么是IPC？</h2><p>IPC，全称Inter-Process Communication，字面意思就是进程间通信或者跨进程通信。那什么是进程呢？它和线程有什么暧昧的关系？<br>进程是系统进行资源分配和调度的基本单位，是操作系统结构的基础；早期表现为一个程序，现在可以看作线程的容器。线程是CPU调度的最小单位。一个进程可以包含一个或者多个线程，进程向系统申请资源，线程使用进程拥有的资源。<br>IPC不是Android所独有的，是现代操作系统都存在的机制，对于Android来说。它是一种基于Linux内核的移动OS，他的进程通信方式不仅仅包含信号量、套接字、管道等等，还包括了Android独有的、特色的Binder机制。</p>
+<h2 id="二、-为什么需要多进程？应用场景…"><a href="#二、-为什么需要多进程？应用场景…" class="headerlink" title="二、 为什么需要多进程？应用场景…"></a>二、 为什么需要多进程？应用场景…</h2><p>谈到IPC的使用场景就必须提到多进程，只有面对多进程这种场景下，才需要考虑多进程通信，这是很好理解的。至于一个应用使用多进程的原因，这个可能很多，辟如有些模块由于特殊原因需要运行在独立的进程；又或者为了加大一个应用可使用的内存，通过多进程的方式申请多份内存空间。还有一个情况需要使用IPC，那就是多个应用之间进行数据共享，使用ContentProvider去查询数据时也是一种进程通讯，只是对我们来说透明化了，无法感知到。</p>
+<h2 id="三、-Android如何开启多进程模式？"><a href="#三、-Android如何开启多进程模式？" class="headerlink" title="三、 Android如何开启多进程模式？"></a>三、 Android如何开启多进程模式？</h2><p>我们可以通过给四大组件在AndroidMenifest.xml指定指定 android:process属性，亦或是在JNI层fork一个新进程，别无他法，过程看似轻松简单，却暗藏杀机，如何抵消多进程带来的负面影响？</p>
+<p>这里有个示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&lt;activity</span><br><span class="line">         android:name=&quot;com.ryg.chapter_2.MainActivity&quot;</span><br><span class="line">         android:configChanges=&quot;orientation|screenSize&quot;</span><br><span class="line">         android:label=&quot;@string/app_name&quot;</span><br><span class="line">         android:launchMode=&quot;standard&quot; &gt;</span><br><span class="line">        &lt;intent-filter&gt;</span><br><span class="line">                &lt;action  android:name=&quot;android.intent.action.MAIN&quot;  /&gt;</span><br><span class="line">                &lt;category  android:name=&quot;android.intent.category.LAUNCHER&quot;  /&gt;</span><br><span class="line">         &lt;/intent-filter&gt;</span><br><span class="line">     &lt;/activity</span><br><span class="line">    &lt;activity</span><br><span class="line">         android:name=&quot;com.ryg.chapter_2.SecondActivity&quot;</span><br><span class="line">         android:configChanges=&quot;screenLayout&quot;</span><br><span class="line">         android:label=&quot;@string/app_name&quot;</span><br><span class="line">         android:process=&quot;:remote&quot;  /&gt;</span><br><span class="line">    &lt;activity</span><br><span class="line">         android:name=&quot;com.ryg.chapter_2.ThirdActivity&quot;</span><br><span class="line">         android:configChanges=&quot;screenLayout&quot;</span><br><span class="line">         android:label=&quot;@string/app_name&quot;</span><br><span class="line">         android:process=&quot;com.ryg.chapter_2.remote&quot;  /&gt;</span><br></pre></td></tr></table></figure></p>
+<p>眼尖的人都发现了两个android:process属性的值不一样，这意味在他们会在3个不同进程内运行。通过DDMS或者命令adb shell ps 观察。进程名看起来没有什么区别，其实它们是有区别的，进程名以“：”开头的进程会属于当前应用的私有进程，其他应用组件不能通过shareUID的方式让其在同一进程中运行，相反，就是全局进程，可以被共享。<br>ShareUID的方式需要两个应用拥有相同的UID以及相同的签名才可以，在这种情况下，不管他们是否跑在统一进程，他们可以互相访问对方的私有数据，譬如data目录、组件信息等等，如果是的话，那么它们还能共享内存数据，看起来就是一个应用的不同部分。</p>
+<h2 id="四、-奇怪现象（哎呀，奇怪了。这个值怎么变了-）"><a href="#四、-奇怪现象（哎呀，奇怪了。这个值怎么变了-）" class="headerlink" title="四、 奇怪现象（哎呀，奇怪了。这个值怎么变了~）"></a>四、 奇怪现象（哎呀，奇怪了。这个值怎么变了~）</h2><p>有的Android开发者会选择在Application或者静态类中储存可变的属性，静态亦或是非静态的，当你开启多进程模式，你会发现你的世界不再简单如旧。</p>
+<p>一般来说，使用多进程会造成如下几方面的问题：<br><strong>（1） 静态成员和单例模式完全失效。 </strong><br><strong>（2） 线程同步机制完全失效。 </strong><br><strong>（3） SharedPreferences 的可靠性下降。 </strong><br><strong>（4） Application会多次创建。</strong></p>
+<p>我们知道Android为每一个应用分配了一个独立的虚拟机，或者说为每个进程都分配一个独立的虚拟机，不同的虚拟机在内存分配上有不同的地址空间，这就导致在不同的虚拟机中访问同一个类的对象会产生多份副本。既然不是同一块内存了，那就算是使用了进程锁也会失效，因为进程锁也是不同内存对象。SharedPreferences虽然最终写入XML文件，但也有利用内存机制进行加速，在不同进程下，并发写入，也会出现问题。在开启多进程模式下，一般认为Application是程序的入口而不应该变化，但可以通过打印进程名称，得知Application会启动多次，因此用于存储公共信息并不可靠。</p>
+<h2 id="五、-IPC基础概念"><a href="#五、-IPC基础概念" class="headerlink" title="五、 IPC基础概念"></a>五、 IPC基础概念</h2><p>Serializable接口、Parcelable接口以及Binder，只有熟悉这三方面的内容后，我们才能更好地理解跨进程通信的各种方式。Serializable和Parcelable接口可以完成对象的序列化过程，当我们需要通过Intent和Binder传输数据时就需要使用Parcelable或者Serializable。</p>
+<h3 id="1-如何使用Serializable来完成对象的序列化。"><a href="#1-如何使用Serializable来完成对象的序列化。" class="headerlink" title="1.如何使用Serializable来完成对象的序列化。"></a>1.如何使用Serializable来完成对象的序列化。</h3><p>想让一个对象实现序列化，只需要这个类实现Serializable接口并声明一个serialVersionUID即可，实现起来非常简单，几乎所有工作都被系统自动完成了。如何进行对象的序列化和反序列化也非常简单，只需要采用ObjectOutputStream和ObjectInputStream即可轻松实现。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@ClassName</span> ObjectUtil</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> 对可序列对象BASE64字符串化</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> K.W.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2013年9月19日 上午2:10:53</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ObjectUtil</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getBASE64String</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span>(obj==<span class="keyword">null</span>)&#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		ByteArrayOutputStream toByte = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">		ObjectOutputStream oos;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			oos = <span class="keyword">new</span> ObjectOutputStream(toByte);</span><br><span class="line">			oos.writeObject(obj);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">			<span class="comment">// TODO Auto-generated catch block</span></span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// 对byte[]进行Base64编码</span></span><br><span class="line">		<span class="keyword">return</span> Base64.encode(toByte.toByteArray());</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title">getObject</span><span class="params">(String base64String)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">byte</span>[] base64Bytes;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			base64Bytes = Base64.decodeToByteArray(base64String);</span><br><span class="line">			ByteArrayInputStream bais = <span class="keyword">new</span> ByteArrayInputStream(base64Bytes);</span><br><span class="line">			ObjectInputStream ois = <span class="keyword">new</span> ObjectInputStream(bais);</span><br><span class="line">			<span class="keyword">return</span> ois.readObject();</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-Android中如何使用Parcelable进行序列化操作"><a href="#2-Android中如何使用Parcelable进行序列化操作" class="headerlink" title="2.Android中如何使用Parcelable进行序列化操作"></a>2.Android中如何使用Parcelable进行序列化操作</h3><p><img src="http://upload-images.jianshu.io/upload_images/3020228-82b0dff63c4d1de3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Parcelable 方法说明"></p>
+<p> Implements Parcelable的时候需要实现内部的方法：</p>
+<p>1）.writeToParcel 将对象数据序列化成一个Parcel对象(序列化之后成为Parcel对象.以便Parcel容器取出数据)</p>
+<p>2）.重写describeContents方法,默认值为0</p>
+<p>3）.Public static final Parcelable.Creator<t>CREATOR (将Parcel容器中的数据转换成对象数据) 同时需要实现两个方法:<br>　　3.1 CreateFromParcel(从Parcel容器中取出数据并进行转换.)<br>　　3.2 newArray(int size)返回对象数据的大小</t></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Book</span> <span class="keyword">implements</span> <span class="title">Parcelable</span></span>&#123;</span><br><span class="line"> <span class="keyword">private</span> String bookName;</span><br><span class="line"> <span class="keyword">private</span> String author;</span><br><span class="line"> <span class="keyword">private</span> <span class="keyword">int</span> publishDate;</span><br><span class="line">  </span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="title">Book</span><span class="params">()</span></span>&#123;</span><br><span class="line">   </span><br><span class="line"> &#125;</span><br><span class="line">  </span><br><span class="line"> <span class="function"><span class="keyword">public</span> String <span class="title">getBookName</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> bookName;</span><br><span class="line"> &#125;</span><br><span class="line">  </span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setBookName</span><span class="params">(String bookName)</span></span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.bookName = bookName;</span><br><span class="line"> &#125;</span><br><span class="line">  </span><br><span class="line"> <span class="function"><span class="keyword">public</span> String <span class="title">getAuthor</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> author;</span><br><span class="line"> &#125;</span><br><span class="line">  </span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAuthor</span><span class="params">(String author)</span></span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.author = author;</span><br><span class="line"> &#125;</span><br><span class="line">  </span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getPublishDate</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> publishDate;</span><br><span class="line"> &#125;</span><br><span class="line">  </span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setPublishDate</span><span class="params">(<span class="keyword">int</span> publishDate)</span></span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.publishDate = publishDate;</span><br><span class="line"> &#125;</span><br><span class="line">  </span><br><span class="line"> <span class="meta">@Override</span></span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">describeContents</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"> &#125;</span><br><span class="line">  </span><br><span class="line"> <span class="meta">@Override</span></span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">writeToParcel</span><span class="params">(Parcel out, <span class="keyword">int</span> flags)</span></span>&#123;</span><br><span class="line">  out.writeString(bookName);</span><br><span class="line">  out.writeString(author);</span><br><span class="line">  out.writeInt(publishDate);</span><br><span class="line"> &#125;</span><br><span class="line">  </span><br><span class="line"> <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Parcelable.Creator&lt;Book&gt; CREATOR = <span class="keyword">new</span> Creator&lt;Book&gt;()&#123;</span><br><span class="line">   </span><br><span class="line">　　　　 <span class="meta">@Override</span></span><br><span class="line">  <span class="keyword">public</span> Book[] newArray(<span class="keyword">int</span> size)&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">new</span> Book[size];</span><br><span class="line">  &#125;</span><br><span class="line">   </span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Book <span class="title">createFromParcel</span><span class="params">(Parcel in)</span></span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">new</span> Book(in);</span><br><span class="line">  &#125;</span><br><span class="line"> &#125;;</span><br><span class="line">  </span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="title">Book</span><span class="params">(Parcel in)</span></span>&#123;</span><br><span class="line">  <span class="comment">//如果元素数据是list类型的时候需要： lits = new ArrayList&lt;?&gt; in.readList(list); </span></span><br><span class="line">  <span class="comment">//否则会出现空指针异常.并且读出和写入的数据类型必须相同.如果不想对部分关键字进行序列化,可以使用transient关键字来修饰以及static修饰.</span></span><br><span class="line">  bookName = in.readString();</span><br><span class="line">  author = in.readString();</span><br><span class="line">  publishDate = in.readInt();</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-Parcelable与Serializable的性能比较"><a href="#3-Parcelable与Serializable的性能比较" class="headerlink" title="3.Parcelable与Serializable的性能比较"></a>3.Parcelable与Serializable的性能比较</h3><p>首先Parcelable的性能要强于Serializable的原因我需要简单的阐述一下</p>
+<p>  1）. 在内存的使用中,前者在性能方面要强于后者</p>
+<p>  2）. 后者在序列化操作的时候会产生大量的临时变量,(原因是使用了反射机制)从而导致GC的频繁调用,因此在性能上会稍微逊色</p>
+<p>  3）. Parcelable是以Ibinder作为信息载体的.在内存上的开销比较小,因此在内存之间进行数据传递的时候,Android推荐使用Parcelable,既然是内存方面比价有优势,那么自然就要优先选择.</p>
+<p>  4）. 在读写数据的时候,Parcelable是在内存中直接进行读写,而Serializable是通过使用IO流的形式将数据读写入在硬盘上.</p>
+<p>  但是：虽然Parcelable的性能要强于Serializable,但是仍然有特殊的情况需要使用Serializable,而不去使用Parcelable,因为Parcelable无法将数据进行持久化,因此在将数据保存在磁盘的时候,仍然需要使用后者,因为前者无法很好的将数据进行持久化.(原因是在不同的Android版本当中,Parcelable可能会不同,因此数据的持久化方面仍然是使用Serializable)</p>
+<h2 id="六、-Binder-（AIDL）"><a href="#六、-Binder-（AIDL）" class="headerlink" title="六、 Binder （AIDL）"></a>六、 Binder （AIDL）</h2><p>Binder 是一个可以很深入的话题，这里不打算深入探究Binder的内部。Android 开发中，Binder主要使用在Service中，包括AIDL和Messager。<br>我们来新建一个AIDL，体验下这个过程，还是以上面的BOOK为例子，首先建两个aidl文件：Book.aidl、IBookManager.aidl。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// Book.aidl</span><br><span class="line">package com.ajb.kotlintest;</span><br><span class="line">parcelable Book ;</span><br><span class="line"></span><br><span class="line">// IBookManager.aidl</span><br><span class="line">package com.ajb.kotlintest;</span><br><span class="line"></span><br><span class="line">// Declare any non-default types here with import statements</span><br><span class="line">import com.ajb.kotlintest.Book;</span><br><span class="line">interface IBookManager &#123;</span><br><span class="line">    List&lt;Book&gt; getBookList();</span><br><span class="line">    void addBook(in Book book);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>build一下就有了java类文件。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.ajb.kotlintest;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IBookManager</span> <span class="keyword">extends</span> <span class="title">android</span>.<span class="title">os</span>.<span class="title">IInterface</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Local-side IPC implementation stub class.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Stub</span> <span class="keyword">extends</span> <span class="title">android</span>.<span class="title">os</span>.<span class="title">Binder</span> <span class="keyword">implements</span> <span class="title">com</span>.<span class="title">ajb</span>.<span class="title">kotlintest</span>.<span class="title">IBookManager</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> java.lang.String DESCRIPTOR = <span class="string">"com.ajb.kotlintest.IBookManager"</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Construct the stub at attach it to the interface.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Stub</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.attachInterface(<span class="keyword">this</span>, DESCRIPTOR);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Cast an IBinder object into an com.ajb.kotlintest.IBookManager interface,</span></span><br><span class="line"><span class="comment">         * generating a proxy if needed.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">static</span> com.ajb.kotlintest.<span class="function">IBookManager <span class="title">asInterface</span><span class="params">(android.os.IBinder obj)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> ((obj == <span class="keyword">null</span>)) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            android.os.IInterface iin = obj.queryLocalInterface(DESCRIPTOR);</span><br><span class="line">            <span class="keyword">if</span> (((iin != <span class="keyword">null</span>) &amp;&amp; (iin <span class="keyword">instanceof</span> com.ajb.kotlintest.IBookManager))) &#123;</span><br><span class="line">                <span class="keyword">return</span> ((com.ajb.kotlintest.IBookManager) iin);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> com.ajb.kotlintest.IBookManager.Stub.Proxy(obj);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> android.os.<span class="function">IBinder <span class="title">asBinder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTransact</span><span class="params">(<span class="keyword">int</span> code, android.os.Parcel data, android.os.Parcel reply, <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</span><br><span class="line">            <span class="keyword">switch</span> (code) &#123;</span><br><span class="line">                <span class="keyword">case</span> INTERFACE_TRANSACTION: &#123;</span><br><span class="line">                    reply.writeString(DESCRIPTOR);</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">case</span> TRANSACTION_getBookList: &#123;</span><br><span class="line">                    data.enforceInterface(DESCRIPTOR);</span><br><span class="line">                    java.util.List&lt;com.ajb.kotlintest.Book&gt; _result = <span class="keyword">this</span>.getBookList();</span><br><span class="line">                    reply.writeNoException();</span><br><span class="line">                    reply.writeTypedList(_result);</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">case</span> TRANSACTION_addBook: &#123;</span><br><span class="line">                    data.enforceInterface(DESCRIPTOR);</span><br><span class="line">                    com.ajb.kotlintest.Book _arg0;</span><br><span class="line">                    <span class="keyword">if</span> ((<span class="number">0</span> != data.readInt())) &#123;</span><br><span class="line">                        _arg0 = com.ajb.kotlintest.Book.CREATOR.createFromParcel(data);</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        _arg0 = <span class="keyword">null</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">this</span>.addBook(_arg0);</span><br><span class="line">                    reply.writeNoException();</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">super</span>.onTransact(code, data, reply, flags);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Proxy</span> <span class="keyword">implements</span> <span class="title">com</span>.<span class="title">ajb</span>.<span class="title">kotlintest</span>.<span class="title">IBookManager</span> </span>&#123;</span><br><span class="line">            <span class="keyword">private</span> android.os.IBinder mRemote;</span><br><span class="line"></span><br><span class="line">            Proxy(android.os.IBinder remote) &#123;</span><br><span class="line">                mRemote = remote;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> android.os.<span class="function">IBinder <span class="title">asBinder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> mRemote;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">public</span> java.lang.<span class="function">String <span class="title">getInterfaceDescriptor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> DESCRIPTOR;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> java.util.List&lt;com.ajb.kotlintest.Book&gt; getBookList() <span class="keyword">throws</span> android.os.RemoteException &#123;</span><br><span class="line">                android.os.Parcel _data = android.os.Parcel.obtain();</span><br><span class="line">                android.os.Parcel _reply = android.os.Parcel.obtain();</span><br><span class="line">                java.util.List&lt;com.ajb.kotlintest.Book&gt; _result;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    _data.writeInterfaceToken(DESCRIPTOR);</span><br><span class="line">                    mRemote.transact(Stub.TRANSACTION_getBookList, _data, _reply, <span class="number">0</span>);</span><br><span class="line">                    _reply.readException();</span><br><span class="line">                    _result = _reply.createTypedArrayList(com.ajb.kotlintest.Book.CREATOR);</span><br><span class="line">                &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                    _reply.recycle();</span><br><span class="line">                    _data.recycle();</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> _result;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addBook</span><span class="params">(com.ajb.kotlintest.Book book)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</span><br><span class="line">                android.os.Parcel _data = android.os.Parcel.obtain();</span><br><span class="line">                android.os.Parcel _reply = android.os.Parcel.obtain();</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    _data.writeInterfaceToken(DESCRIPTOR);</span><br><span class="line">                    <span class="keyword">if</span> ((book != <span class="keyword">null</span>)) &#123;</span><br><span class="line">                        _data.writeInt(<span class="number">1</span>);</span><br><span class="line">                        book.writeToParcel(_data, <span class="number">0</span>);</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        _data.writeInt(<span class="number">0</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                    mRemote.transact(Stub.TRANSACTION_addBook, _data, _reply, <span class="number">0</span>);</span><br><span class="line">                    _reply.readException();</span><br><span class="line">                &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                    _reply.recycle();</span><br><span class="line">                    _data.recycle();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRANSACTION_getBookList = (android.os.IBinder.FIRST_CALL_TRANSACTION + <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRANSACTION_addBook = (android.os.IBinder.FIRST_CALL_TRANSACTION + <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> java.util.List&lt;com.ajb.kotlintest.Book&gt; getBookList() <span class="keyword">throws</span> android.os.RemoteException;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addBook</span><span class="params">(com.ajb.kotlintest.Book book)</span> <span class="keyword">throws</span> android.os.RemoteException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上述代码是系统生成的，它继承了IInterface这个接口，同时它自己也还是个接口，所有可以在Binder中传输的接口都需要继承IInterface接口。首先，它声明了两个方法getBookList和addBook，显然这就是我们在IBookManager.aidl中所声明的方法，同时它还声明了两个整型的id分别用于标识这两个方法，这两个id用于标识在transact过程中客户端所请求的到底是哪个方法。接着，它声明了一个内部类Stub，这个Stub就是一个Binder类，当客户端和服务端都位于同一个进程时，方法调用不会走跨进程的transact过程，而当两者位于不同进程时，方法调用需要走transact过程，这个逻辑由Stub的内部代理类Proxy来完成。这么来看，IBookManager这个接口的确很简单，但是我们也应该认识到，这个接口的核心实现就是它的内部类Stub和Stub的内部代理类Proxy，下面详细介绍针对这两个类的每个方法的含义。</p>
+<p><strong>asInterface(android.os.IBinderobj)</strong><br>用于将服务端的Binder对象转换成客户端所需的AIDL接口类型的对象，这种转换过程是区分进程的，如果客户端和服务端位于同一进程，那么此方法返回的就是服务端的Stub对象本身，否则返回的是系统封装后的Stub.proxy对象。</p>
+<p><strong>asBinder</strong><br>此方法用于返回当前Binder对象。</p>
+<p><strong>onTransact</strong><br>这个方法运行在服务端中的Binder线程池中，当客户端发起跨进程请求时，远程请求会通过系统底层封装后交由此方法来处理。该方法的原型为 public Booleanon Transact(intcode,android.os.Parcel<br> data,android.os.Parcel reply,int flags)。服务端通过code可以确定客户端所请求的目标方法是什么，接着从data中取出目标方法所需的参数（如果目标方法有参数的话），然后执行目标方法。当目标方法执行完毕后，就向reply中写入返回值（如果目标方法有返回值的话），onTransact方法的执行过程就是这样的。需要注意的是，如果此方法返回false，那么客户端的请求会失败，因此我们可以利用这个特性来做权限验证，毕竟我们也不希望随便一个进程都能远程调用我们的服务。</p>
+<p><strong>Proxy#getBookList</strong><br>这个方法运行在客户端，当客户端远程调用此方法时，它的内部实现是这样的：首先创建该方法所需要的输入型Parcel对象_data、输出型Parcel对象_reply和返回值对象List；然后把该方法的参数信息写入_data中（如果有参数的话）；接着调用transact方法来发起RPC（远程过程调用）请求，同时当前线程挂起；然后服务端的onTransact方法会被调用，直到RPC过程返回后，当前线程继续执行，并从_reply中取出RPC过程的返回结果；最后返回_reply中的数据。</p>
+<p><strong>Proxy#addBook</strong><br>这个方法运行在客户端，它的执行过程和getBookList是一样的，addBook没有返回值，所以它不需要从_reply中取出返回值。</p>
+<p>在服务端需要创建一个 BookManagerImpl 的对象并在 Service 的 onBind 方法中返回即可。以下就是一个服务端的典型实现。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//服务器端</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomService</span> <span class="keyword">extends</span> <span class="title">Service</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> List&lt;Book&gt; mBookList;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">CustomService</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> BookManagerImpl();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">BookManagerImpl</span> <span class="keyword">extends</span> <span class="title">IBookManager</span>.<span class="title">Stub</span> </span>&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> List&lt;Book&gt; <span class="title">getBookList</span><span class="params">()</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (mBookList) &#123;</span><br><span class="line">                <span class="keyword">return</span> mBookList;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addBook</span><span class="params">(Book book)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (mBookList) &#123;</span><br><span class="line">                <span class="keyword">if</span> (!mBookList.contains(book)) &#123;</span><br><span class="line">                    mBookList.add(book);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">linkToDeath</span><span class="params">(DeathRecipient recipient, <span class="keyword">int</span> flags)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">super</span>.linkToDeath(recipient, flags);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">unlinkToDeath</span><span class="params">(DeathRecipient recipient, <span class="keyword">int</span> flags)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">super</span>.unlinkToDeath(recipient, flags);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Binder有两个很重要的方法linkToDeath和unlinkToDeath。</strong></p>
+<p>Binder运行在服务端进程，如果服务端进程由于某种原因异常终止，这个时候我们到服务端的Binder连接断裂（称之为Binder死亡），会导致我们的远程调用失败。更为关键的是，如果我们不知道Binder连接已经断裂，那么客户端的功能就会受到影响。</p>
+<p>为了解决这个问题，Binder中提供了两个配对的方法linkToDeath和unlinkToDeath，通过linkToDeath我们可以给Binder设置一个死亡代理，当Binder死亡时，我们就会收到通知，这个时候我们就可以重新发起连接请求从而恢复连接。那么到底如何给Binder设置死亡代理呢？也很简单。</p>
+<p>首先，声明一个DeathRecipient对象。DeathRecipient是一个接口，其内部只有一个方法binderDied，我们需要实现这个方法，当Binder死亡的时候，系统就会回调binderDied方法，然后我们就可以移出之前绑定的binder代理并重新绑定远程服务。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//客户端（Activity）内</span></span><br><span class="line">        <span class="keyword">private</span> IBinder.DeathRecipient mDeathRecipient = <span class="keyword">new</span> IBinder.DeathRecipient() &#123;  </span><br><span class="line">  </span><br><span class="line">        <span class="meta">@Override</span>  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">binderDied</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">            <span class="comment">// TODO Auto-generated method stub  </span></span><br><span class="line">            <span class="keyword">if</span> (mBookManager == <span class="keyword">null</span>)  </span><br><span class="line">                <span class="keyword">return</span>;  </span><br><span class="line">            mBookManager.asBinder().unlinkToDeath(mDeathRecipient, <span class="number">0</span>);  </span><br><span class="line">            mBookManager = <span class="keyword">null</span>;  </span><br><span class="line">            <span class="comment">// <span class="doctag">TODO:</span>重新绑定远程服务</span></span><br><span class="line">　　　　　　　bindService(<span class="keyword">new</span> Intent(<span class="string">"com.ajb.kotlintest.CustomService"</span>).</span><br><span class="line">　　　　　　　　　　setPackage(<span class="string">"com.ajb.kotlintest"</span>), conn, BIND_AUTO_CREATE);  </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;;  </span><br><span class="line">      </span><br><span class="line">    <span class="keyword">private</span> ServiceConnection conn = <span class="keyword">new</span> ServiceConnection() &#123;  </span><br><span class="line">  </span><br><span class="line">        <span class="meta">@Override</span>  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceDisconnected</span><span class="params">(ComponentName name)</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">        &#125;  </span><br><span class="line">  </span><br><span class="line">        <span class="meta">@Override</span>  </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceConnected</span><span class="params">(ComponentName name, IBinder service)</span> </span>&#123;  </span><br><span class="line">            mBookManager = IBookManager.Stub.asInterface(service);  </span><br><span class="line">            <span class="keyword">try</span> &#123;  </span><br><span class="line">                service.linkToDeath(mDeathRecipient, <span class="number">0</span>);  </span><br><span class="line">                Toast.makeText(getApplicationContext(), mBookManager.getName(),  </span><br><span class="line">                        Toast.LENGTH_LONG).show();  </span><br><span class="line">            &#125; <span class="keyword">catch</span> (RemoteException e) &#123;  </span><br><span class="line">                <span class="comment">// TODO Auto-generated catch block  </span></span><br><span class="line">                e.printStackTrace();  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;; </span><br><span class="line"><span class="comment">//然后在onCreate先bindService一次，由上面处理重绑。</span></span><br></pre></td></tr></table></figure>
+<p>这样我们就能简单的传递信息了，但是这其中还有一些坑我们没遇到过，通过IBinder在服务端与客户端之间传递自定义对象，自定义对象需要实现Parcelable接口，就是说他们是在序列化和反序列化之间运作，服务端与客户端之间传递的对象并不是同一个对象。</p>
+<h3 id="5-Listener-在Binder中使用"><a href="#5-Listener-在Binder中使用" class="headerlink" title="5.Listener 在Binder中使用"></a>5.Listener 在Binder中使用</h3><p>虽然说多次，跨进程传输客户端的对象会在服务端生成不同的对象，但是生成的对象有一个共同点，就是它们底层的Binder对象是同一个，RemoteCallbackList利用这一特性，在解除注册Listener时，找到和注册时一样Binder对象的listener进行删除。RemoteCallbackList 当客户端死亡，它自动解除客户端持有的 listener，而且由于其线程同步的特性，不需要额外的线程同步工作。</p>
+<p>添加注册和解注册的办法。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// IBookManager.aidl</span><br><span class="line">package com.ajb.kotlintest;</span><br><span class="line"></span><br><span class="line">// Declare any non-default types here with import statements</span><br><span class="line">import com.ajb.kotlintest.Book;</span><br><span class="line">interface IBookManager &#123;</span><br><span class="line">    List&lt;Book&gt; getBookList();</span><br><span class="line">    void addBook(in Book book);</span><br><span class="line">    void registerListener( IOnNewBookArrivedListener listener);</span><br><span class="line">    void unregisterListener( IOnNewBookArrivedListener listener);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在Service中，添加相关实现代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> RemoteCallbackList&lt; IOnNewBookArrivedListener&gt; mListenerList = <span class="keyword">new</span> RemoteCallbackList&lt; IOnNewBookArrivedListener&gt;(); </span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span> </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">registerListener</span><span class="params">( IOnNewBookArrivedListener listener)</span> </span></span><br><span class="line"><span class="function">                                           <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">    mListenerList. register( listener);</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span> </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">unregisterListener</span><span class="params">( IOnNewBookArrivedListener listener)</span> </span></span><br><span class="line"><span class="function">                                           <span class="keyword">throws</span> RemoteException </span>&#123; </span><br><span class="line">    mListenerList. unregister( listener); </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>利用这些就可以在新书到来之时，通知需要知道的监听者，不需要时就解除注册即可。</p>
+<h2 id="七、-ContentProvider"><a href="#七、-ContentProvider" class="headerlink" title="七、 ContentProvider"></a>七、 ContentProvider</h2><p>创建一个自定义的ContentProvider很简单，只需要继承ContentProvider类并实现六个抽象方法即可：onCreate、query、update、insert、delete和getType。</p>
+<p><strong>onCreate</strong><br>代表ContentProvider的创建，一般来说我们需要做一些初始化工作；</p>
+<p><strong>getType</strong><br>用来返回一个Uri请求所对应的MIME类型（媒体类型），比如图片、视频等，这个媒体类型还是有点复杂的，如果我们的应用不关注这个选项，可以直接在这个方法中返回<strong>null</strong>或者<strong> “ */* ” </strong>；Android系统所提供的MediaStore功能就是文件类型的ContentProvider，详细实现可以参考MediaStore。</p>
+<p><strong>query、update、insert、delete</strong><br>剩下的四个方法对应于CRUD操作，即实现对数据表的增删改查功能。</p>
+<p>根据Binder的工作原理，我们知道这六个方法均运行在ContentProvider的进程中，除了onCreate由系统回调并运行在主线程里，其他五个方法均由外界回调并运行在Binder线程池中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// DbOpenHelper. java </span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DbOpenHelper</span> <span class="keyword">extends</span> <span class="title">SQLiteOpenHelper</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String DB_NAME = <span class="string">"book_provider. db"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String BOOK_TABLE_NAME = <span class="string">"book"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String USER_TALBE_NAME = <span class="string">"user"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DB_VERSION = <span class="number">1</span>; <span class="comment">// 图书和用户信息表</span></span><br><span class="line">    <span class="keyword">private</span> String CREATE_BOOK_TABLE = <span class="string">"CREATE TABLE IF NOT EXISTS "</span> + BOOK_TABLE_NAME + <span class="string">"(_id INTEGER PRIMARY KEY,"</span> + <span class="string">"name TEXT)"</span>;</span><br><span class="line">    <span class="keyword">private</span> String CREATE_USER_TABLE = <span class="string">"CREATE TABLE IF NOT EXISTS "</span> + USER_TALBE_NAME + <span class="string">"(_id INTEGER PRIMARY KEY,"</span> + <span class="string">"name TEXT,"</span> + <span class="string">"sex INT)"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DbOpenHelper</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(context, DB_NAME, <span class="keyword">null</span>, DB_VERSION);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(SQLiteDatabase db)</span> </span>&#123;</span><br><span class="line">        db.execSQL(CREATE_BOOK_TABLE);</span><br><span class="line">        db.execSQL(CREATE_USER_TABLE);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onUpgrade</span><span class="params">(SQLiteDatabase db, <span class="keyword">int</span> oldVersion, <span class="keyword">int</span> newVersion)</span> </span>&#123; <span class="comment">// TODO ignored</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ContentProvider. java</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BookProvider</span> <span class="keyword">extends</span> <span class="title">ContentProvider</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"BookProvider"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String AUTHORITY = <span class="string">"com.ajb.kotlintest.provider"</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Uri BOOK_CONTENT_URI = Uri.parse(<span class="string">" content://"</span> + AUTHORITY + <span class="string">"/book"</span>);</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Uri USER_CONTENT_URI = Uri.parse(<span class="string">" content://"</span> + AUTHORITY + <span class="string">"/user"</span>);</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> BOOK_URI_CODE = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> USER_URI_CODE = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> UriMatcher sUriMatcher = <span class="keyword">new</span> UriMatcher(UriMatcher.NO_MATCH);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="comment">//使用 UriMatcher 的 addURI 方法将 Uri 和 Uri_Code 关联到一起</span></span><br><span class="line">        sUriMatcher.addURI(AUTHORITY, <span class="string">" book"</span>, BOOK_URI_CODE);</span><br><span class="line">        sUriMatcher.addURI(AUTHORITY, <span class="string">" user"</span>, USER_URI_CODE);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Context mContext;</span><br><span class="line">    <span class="keyword">private</span> SQLiteDatabase mDb;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Log.d(TAG, <span class="string">" onCreate, current thread:"</span> + Thread.currentThread().getName());</span><br><span class="line">        mContext = getContext();</span><br><span class="line">        initProviderData();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">initProviderData</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        mDb = <span class="keyword">new</span> DbOpenHelper(mContext).getWritableDatabase();</span><br><span class="line">        mDb.execSQL(<span class="string">" delete from "</span> + DbOpenHelper.BOOK_TABLE_NAME);</span><br><span class="line">        mDb.execSQL(<span class="string">" delete from "</span> + DbOpenHelper.USER_TALBE_NAME);</span><br><span class="line"><span class="comment">//ContentProvider创建时，初始化数据库。注意：这里仅仅是为了演示，实际使用中不推荐在主线程中进行耗时的数据库操作</span></span><br><span class="line">        mDb.execSQL(<span class="string">" insert into book values( 3,' Android');"</span>);</span><br><span class="line">        mDb.execSQL(<span class="string">" insert into book values( 4,' Ios');"</span>);</span><br><span class="line">        mDb.execSQL(<span class="string">" insert into book values( 5,' Html5');"</span>);</span><br><span class="line">        mDb.execSQL(<span class="string">" insert into user values( 1,' jake', 1);"</span>);</span><br><span class="line">        mDb.execSQL(<span class="string">" insert into user values( 2,' jasmine', 0);"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Cursor <span class="title">query</span><span class="params">(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)</span> </span>&#123;</span><br><span class="line">        Log.d(TAG, <span class="string">" query, current thread:"</span> + Thread.currentThread().getName());</span><br><span class="line">        String table = getTableName(uri);</span><br><span class="line">        <span class="keyword">if</span> (table == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">" Unsupported URI: "</span> + uri);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> mDb.query(table, projection, selection, selectionArgs, <span class="keyword">null</span>, <span class="keyword">null</span>, sortOrder, <span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getType</span><span class="params">(Uri uri)</span> </span>&#123;</span><br><span class="line">        Log.d(TAG, <span class="string">" getType"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Uri <span class="title">insert</span><span class="params">(Uri uri, ContentValues values)</span> </span>&#123;</span><br><span class="line">        Log.d(TAG, <span class="string">" insert"</span>);</span><br><span class="line">        String table = getTableName(uri);</span><br><span class="line">        <span class="keyword">if</span> (table == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">" Unsupported URI: "</span> + uri);</span><br><span class="line">        &#125;</span><br><span class="line">        mDb.insert(table, <span class="keyword">null</span>, values);</span><br><span class="line">        mContext.getContentResolver().notifyChange(uri, <span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">return</span> uri;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">delete</span><span class="params">(Uri uri, String selection, String[] selectionArgs)</span> </span>&#123;</span><br><span class="line">        Log.d(TAG, <span class="string">" delete"</span>);</span><br><span class="line">        String table = getTableName(uri);</span><br><span class="line">        <span class="keyword">if</span> (table == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">" Unsupported URI: "</span> + uri);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> count = mDb.delete(table, selection, selectionArgs);</span><br><span class="line">        <span class="keyword">if</span> (count &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            getContext().getContentResolver().notifyChange(uri, <span class="keyword">null</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> count;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">update</span><span class="params">(Uri uri, ContentValues values, String selection, String[]</span></span></span><br><span class="line"><span class="function"><span class="params">            selectionArgs)</span> </span>&#123;</span><br><span class="line">        Log.d(TAG, <span class="string">" update"</span>);</span><br><span class="line">        String table = getTableName(uri);</span><br><span class="line">        <span class="keyword">if</span> (table == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">" Unsupported URI: "</span> + uri);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> row = mDb.update(table, values, selection, selectionArgs);</span><br><span class="line">        <span class="keyword">if</span> (row &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            getContext().getContentResolver().notifyChange(uri, <span class="keyword">null</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> row;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">getTableName</span><span class="params">(Uri uri)</span> </span>&#123;</span><br><span class="line">        String tableName = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">switch</span> (sUriMatcher.match(uri)) &#123;</span><br><span class="line">            <span class="keyword">case</span> BOOK_URI_CODE:</span><br><span class="line">                tableName = DbOpenHelper.BOOK_TABLE_NAME;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> USER_URI_CODE:</span><br><span class="line">                tableName = DbOpenHelper.USER_TALBE_NAME;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> tableName;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ContentProvider 通过 Uri 来区分外界要访问的的数据集合，为了知道外界要访问的是哪个表，我们需要为它们定义单独的 Uri 和 Uri_Code ，并将 Uri 和对应的 Uri_Code 相关联，我们可以使用 UriMatcher 的 addURI 方法将 Uri 和 Uri_Code 关联到一起。这样，当外界请求访问 BookProvider 时，我们就可以根据请求的 Uri 来得到 Uri_Code ，有了 Uri_Code 我们就可以知道外界想要访问哪个表，然后就可以进行相应的数据操作了，</p>
+<p>接着我们需要注册这个 BookProvider，否则它无法向外界提供有效的数据。 如下所示。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;provider </span><br><span class="line">        android:name = &quot;.provider.BookProvider&quot; </span><br><span class="line">        android:authorities = &quot;com.ajb.kotlintest.provider&quot; </span><br><span class="line">        android:permission = &quot;com.ajb.kotlintest.PROVIDER&quot; </span><br><span class="line">        android:process = &quot;:provider&quot; /&gt;</span><br></pre></td></tr></table></figure>
+<p>注册了ContentProvider以后，我们就可以在外部应用中访问它了。</p>
+<p><strong>注意点：</strong>android:authorities 必须是唯一的，这里建议加上包名前缀。android:process让BookProvider运行在独立的进程中并给它添加了权限，这样外界应用如果想访问BookProvider，就必须声明“com.ajb.kotlin.PROVIDER”这个权限。ContentProvider的权限还可以细分为读权限和写权限，分别对应android:readPermission和android:writePermission属性，如果分别声明了读权限和写权限，那么外界应用也必须依次声明相应的权限才可以进行读/写操作，否则外界应用会异常终止。</p>
+<h2 id="八、Messenger"><a href="#八、Messenger" class="headerlink" title="八、Messenger"></a>八、Messenger</h2><p> Messenger 的使用方法很简单，它对 AIDL 做了封装，使得我们可以更简便地进行进程间通信。同时，由于它一次处理一个请求，因此在服务端我们不用考虑线程同步的问题，这是因为服务端中不存在并发执行的情形。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MessengerService</span> <span class="keyword">extends</span> <span class="title">Service</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"MessengerService"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MessengerHandler</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MSG_FROM_CLIENT = <span class="number">1000</span>;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">switch</span> (msg.what) &#123;</span><br><span class="line">                <span class="keyword">case</span> MSG_FROM_CLIENT:</span><br><span class="line">                    Log.i(TAG, <span class="string">" receive msg from Client:"</span> + msg.getData().getString(<span class="string">" msg"</span>));</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">default</span>:</span><br><span class="line">                    <span class="keyword">super</span>.handleMessage(msg);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Messenger mMessenger = <span class="keyword">new</span> Messenger(<span class="keyword">new</span> MessengerHandler());</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mMessenger.getBinder();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>关于 Messenger的介绍就这么多，更详细的资料请查看相关网络资料。</p>
+<h2 id="九、-Socket"><a href="#九、-Socket" class="headerlink" title="九、 Socket"></a>九、 Socket</h2><p>我们也可以通过 Socket 来实现进程间的通信。 Socket 也称为“套接字”，它分为流式套接字( TCP 协议)和用户数据报套接字( UDP 协议)两种。 </p>
+<p>TCP 协议是<strong>面向连接</strong>的协议，提供稳定的双向通信功能， TCP 连接的建立需要经过“三次握手”才能完成，为了提供稳定的数据传输功能，其本身提供了<strong>超时重传机制</strong>，因此具有很高的稳定性；</p>
+<p>而 UDP 是<strong>无连接</strong>的，提供不稳定的单向通信功能，当然 UDP 也可以实现双向通信功能。在性能上， UDP 具有更好的效率，其缺点是<strong>不保证数据一定能够正确传输</strong>，尤其是在网络拥塞的情况下。关于 TCP 和 UDP 的介绍就这么多，更详细的资料请查看相关网络资料。</p>
+<p>至此，Android IPC机制的介绍暂告一段落了。</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>优点</th>
+<th>缺点</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bundle</td>
+<td>简单易用</td>
+<td>只能传输Bundle支持的数据类型</td>
+<td>四大组件间的进程间通信</td>
+</tr>
+<tr>
+<td>文件共享</td>
+<td>简单易用</td>
+<td>不适合高并发场景，并且无法做到进程间即时通信</td>
+<td>无并发访问情形，交换简单的数据实时性不高的场景</td>
+</tr>
+<tr>
+<td>AIDL</td>
+<td>功能强大，支持一对多并发通信，支持实时通信</td>
+<td>使用稍复杂，需要处理好线程同步</td>
+<td>一对多通信且有RPC需求</td>
+</tr>
+<tr>
+<td>Messenger</td>
+<td>功能一般，支持一对多串行通信，支持实时通信</td>
+<td>不能很处理高并发清醒，不支持RPC，数据通过Message进行传输，因此只能传输Bundle支持的数据类型</td>
+<td>低并发的一对多即时通信，无RPC需求，或者无需返回结果的RPC需求</td>
+</tr>
+<tr>
+<td>ContentProvider</td>
+<td>在数据源访问方面功能强大，支持一对多并发数据共享，可通过Call方法扩展其他操作</td>
+<td>可以理解为受约束的AIDL，主要提供数据源的CRUD操作</td>
+<td>一对多的进程间数据共享</td>
+</tr>
+<tr>
+<td>Socket</td>
+<td>功能请打，可以通过网络传输字节流，支持一对多并发实时通信</td>
+<td>实现细节稍微有点烦琐，不支持直接的RPC</td>
+<td>网络数据交换</td>
+</tr>
+</tbody>
+</table>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/IPC机制/" rel="tag"># IPC机制</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/02/Android开发：Mac下快速处理图标大小/" rel="next" title="Android开发：Mac下快速处理图标大小">
+                <i class="fa fa-chevron-left"></i> Android开发：Mac下快速处理图标大小
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/06/13/Android-增量更新-（一）-NDK-编译-Bsdiff/" rel="prev" title="Android增量更新（一）NDK 编译 Bsdiff">
+                Android增量更新（一）NDK 编译 Bsdiff <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="Kuwork" />
+          <p class="site-author-name" itemprop="name">Kuwork</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、-什么是IPC？"><span class="nav-number">1.</span> <span class="nav-text">一、 什么是IPC？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、-为什么需要多进程？应用场景…"><span class="nav-number">2.</span> <span class="nav-text">二、 为什么需要多进程？应用场景…</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、-Android如何开启多进程模式？"><span class="nav-number">3.</span> <span class="nav-text">三、 Android如何开启多进程模式？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、-奇怪现象（哎呀，奇怪了。这个值怎么变了-）"><span class="nav-number">4.</span> <span class="nav-text">四、 奇怪现象（哎呀，奇怪了。这个值怎么变了~）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、-IPC基础概念"><span class="nav-number">5.</span> <span class="nav-text">五、 IPC基础概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-如何使用Serializable来完成对象的序列化。"><span class="nav-number">5.1.</span> <span class="nav-text">1.如何使用Serializable来完成对象的序列化。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Android中如何使用Parcelable进行序列化操作"><span class="nav-number">5.2.</span> <span class="nav-text">2.Android中如何使用Parcelable进行序列化操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Parcelable与Serializable的性能比较"><span class="nav-number">5.3.</span> <span class="nav-text">3.Parcelable与Serializable的性能比较</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#六、-Binder-（AIDL）"><span class="nav-number">6.</span> <span class="nav-text">六、 Binder （AIDL）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Listener-在Binder中使用"><span class="nav-number">6.1.</span> <span class="nav-text">5.Listener 在Binder中使用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#七、-ContentProvider"><span class="nav-number">7.</span> <span class="nav-text">七、 ContentProvider</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#八、Messenger"><span class="nav-number">8.</span> <span class="nav-text">八、Messenger</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#九、-Socket"><span class="nav-number">9.</span> <span class="nav-text">九、 Socket</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuwork</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

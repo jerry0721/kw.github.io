@@ -1,0 +1,859 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,Gradle发布,JCenter," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="目的发布自己的android library（也就是aar/jar）到公共的jcenter仓库，所有的人都能用gradle最简单的方式引用。为什么选择jcenter，它兼容maven，而且支持更多形式仓库，android studio最新版本已经默认jcenter了。 环境Android Studio 2.2.2 参考文章使用Gradle发布Android开源项目到JCenter 在这个基础上">
+<meta name="keywords" content="Android,Gradle发布,JCenter">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Gradle发布aar&#x2F;jar项目到JCenter仓库">
+<meta property="og:url" content="https://kuwork.github.io/2017/02/18/使用Gradle发布aar-jar项目到JCenter仓库/index.html">
+<meta property="og:site_name" content="K.W. 时间囊">
+<meta property="og:description" content="目的发布自己的android library（也就是aar/jar）到公共的jcenter仓库，所有的人都能用gradle最简单的方式引用。为什么选择jcenter，它兼容maven，而且支持更多形式仓库，android studio最新版本已经默认jcenter了。 环境Android Studio 2.2.2 参考文章使用Gradle发布Android开源项目到JCenter 在这个基础上">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-7d38ce9eb0b416f3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-157100f9d3c13514.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-d73943d910d78ece.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-9e1532e71cc32d0d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-4be6bee8028159df.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-4f3fa25e89f5516b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-ad3f1489a142efa0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-d6456765a5b70002.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-1559f9a41f5d4ae0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-157100f9d3c13514.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-d73943d910d78ece.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-9e1532e71cc32d0d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-4be6bee8028159df.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-4f3fa25e89f5516b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-ad3f1489a142efa0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-d6456765a5b70002.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3020228-1559f9a41f5d4ae0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-09-25T07:16:29.466Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用Gradle发布aar&#x2F;jar项目到JCenter仓库">
+<meta name="twitter:description" content="目的发布自己的android library（也就是aar/jar）到公共的jcenter仓库，所有的人都能用gradle最简单的方式引用。为什么选择jcenter，它兼容maven，而且支持更多形式仓库，android studio最新版本已经默认jcenter了。 环境Android Studio 2.2.2 参考文章使用Gradle发布Android开源项目到JCenter 在这个基础上">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/3020228-7d38ce9eb0b416f3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://kuwork.github.io/2017/02/18/使用Gradle发布aar-jar项目到JCenter仓库/"/>
+
+
+
+
+
+  <title> 使用Gradle发布aar/jar项目到JCenter仓库 | K.W. 时间囊 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">K.W. 时间囊</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">停下来休息的时候,不要忘记别人还在奔跑</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://kuwork.github.io/2017/02/18/使用Gradle发布aar-jar项目到JCenter仓库/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kuwork">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="K.W. 时间囊">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                使用Gradle发布aar/jar项目到JCenter仓库
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-18T17:35:57+08:00">
+                2017-02-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/开发工具/" itemprop="url" rel="index">
+                    <span itemprop="name">开发工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://upload-images.jianshu.io/upload_images/3020228-7d38ce9eb0b416f3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<hr>
+<h4 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h4><p>发布自己的android library（也就是aar/jar）到公共的jcenter仓库，所有的人都能用gradle最简单的方式引用。为什么选择jcenter，它兼容maven，而且支持更多形式仓库，android studio最新版本已经默认jcenter了。</p>
+<h4 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h4><p>Android Studio 2.2.2</p>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="http://www.cnblogs.com/qianxudetianxia/p/4322331.html" target="_blank" rel="noopener">使用Gradle发布Android开源项目到JCenter</a></p>
+<p>在这个基础上，修正一些导入库问题。</p>
+<h2 id="一、注册账号"><a href="#一、注册账号" class="headerlink" title="一、注册账号"></a>一、注册账号</h2><p>在 <a href="https://bintray.com/signup/oss" target="_blank" rel="noopener">https://bintray.com/signup/oss</a> 上注册一个账号。我是以github账号直接登陆的。<br><strong>注意看上面的地址，直接使用，首页那个按钮是坑货。</strong></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-157100f9d3c13514.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="首页企业注册按钮"></p>
+<p><strong>这才是真的个人注册页面！</strong><br><img src="http://upload-images.jianshu.io/upload_images/3020228-d73943d910d78ece.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="个人注册页面"></p>
+<h2 id="二、记录API-Key"><a href="#二、记录API-Key" class="headerlink" title="二、记录API Key"></a>二、记录API Key</h2><p>注册后，在 <a href="https://bintray.com/profile/edit" target="_blank" rel="noopener">https://bintray.com/profile/edit</a> 页面的左边菜单的最下面有API Key，点击后：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-9e1532e71cc32d0d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>复制明文API key，后面会用到。</p>
+<p>然后创建一个Maven仓库。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-4be6bee8028159df.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>注意名称必须是maven。类型当然也是Maven。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-4f3fa25e89f5516b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h2 id="三、新建项目（以RxBus为例）"><a href="#三、新建项目（以RxBus为例）" class="headerlink" title="三、新建项目（以RxBus为例）"></a>三、新建项目（以RxBus为例）</h2><p>在Android Studio中New一个Project。完成之后在RxBus的根目录下会有一个build.gradle,在buildscript/dependencies中添加两个classpath：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">classpath <span class="string">'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'</span></span><br><span class="line">classpath <span class="string">'com.github.dcendents:android-maven-gradle-plugin:1.5'</span></span><br></pre></td></tr></table></figure>
+<p>这里注意 <strong>版本太旧，会报错</strong>。</p>
+<p>这是两个帮助发布项目的插件，完整的project build.gradle请查看<a href="https://github.com/kuwork/rxbus/blob/master/build.gradle#L9L10" target="_blank" rel="noopener">这里</a>。</p>
+<h2 id="四、新建模块"><a href="#四、新建模块" class="headerlink" title="四、新建模块"></a>四、新建模块</h2><p>在当前Project中New一个Module，比如我这里叫rxbus，是一个完整的Android Library，就可以以aar/jar的形式发布了。完成之后在rxbus下也会有一个build.gradle，这个build.gradle是今天的重中之重。</p>
+<h2 id="五、构建build-gradle"><a href="#五、构建build-gradle" class="headerlink" title="五、构建build.gradle"></a>五、构建build.gradle</h2><p>默认的build.gradle大概是这样的：<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">apply <span class="string">plugin:</span> <span class="string">'com.android.library'</span></span><br><span class="line"></span><br><span class="line">android &#123;</span><br><span class="line">    compileSdkVersion <span class="number">25</span></span><br><span class="line">    buildToolsVersion <span class="string">"25.0.2"</span></span><br><span class="line"></span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">        minSdkVersion <span class="number">9</span></span><br><span class="line">        targetSdkVersion <span class="number">25</span></span><br><span class="line">        versionCode <span class="number">1</span></span><br><span class="line">        versionName version</span><br><span class="line">    &#125;</span><br><span class="line">    buildTypes &#123;</span><br><span class="line">        release &#123;</span><br><span class="line">            minifyEnabled <span class="literal">false</span></span><br><span class="line">            proguardFiles getDefaultProguardFile(<span class="string">'proguard-android.txt'</span>), <span class="string">'proguard-rules.pro'</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    compile fileTree(<span class="string">dir:</span> <span class="string">'libs'</span>, <span class="string">include:</span> [<span class="string">'*.jar'</span>])</span><br><span class="line">    androidTestCompile(<span class="string">'com.android.support.test.espresso:espresso-core:2.2.2'</span>, &#123;</span><br><span class="line">        exclude <span class="string">group:</span> <span class="string">'com.android.support'</span>, <span class="string">module:</span> <span class="string">'support-annotations'</span></span><br><span class="line">    &#125;)</span><br><span class="line">    testCompile <span class="string">'junit:junit:4.12'</span></span><br><span class="line">    compile <span class="string">'com.jakewharton.rxrelay2:rxrelay:2.0.0'</span></span><br><span class="line">    provided <span class="string">'io.reactivex.rxjava2:rxjava:2.0.1'</span></span><br><span class="line">    provided <span class="string">'io.reactivex.rxjava2:rxandroid:2.0.1'</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>下面我们一步步修改补充这个build.gradle<br>1.添加插件</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apply <span class="string">plugin:</span> <span class="string">'com.github.dcendents.android-maven'</span></span><br><span class="line">apply <span class="string">plugin:</span> <span class="string">'com.jfrog.bintray'</span></span><br></pre></td></tr></table></figure>
+<p>2.定义版本</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">version = <span class="string">"0.1"</span></span><br></pre></td></tr></table></figure>
+<p>3.定义相关网站<br>有单独的官方网站那是最好的，没用的话就用git网址就可以了。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> siteUrl = <span class="string">'https://github.com/kuwork/rxbus'</span> <span class="comment">// project homepage</span></span><br><span class="line"><span class="keyword">def</span> gitUrl = <span class="string">'https://github.com/kuwork/rxbus.git'</span> <span class="comment">// project git</span></span><br></pre></td></tr></table></figure>
+<p>4.定义Group<br>举个例子，当我们引用recylerview的时候是这样的：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compile <span class="string">'com.android.support:recyclerview-v7:21.0.2'</span></span><br></pre></td></tr></table></figure>
+<p>引号内字符串以”:”分割为三部分，第一部分就是group，第二部分是name， 第三部分是上面定义的version。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 根节点添加group = "com.kw"</span></span><br></pre></td></tr></table></figure>
+<p>5.定义pom并打包aar/jar<br>上传到jcenter至少需要四个文件，除了打包的aar之外，还需要pom和javadoc，source，否则是通不过jcenter审核的。不过不用紧张，这些我们都可以用脚本生成。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">install &#123;</span><br><span class="line">    repositories.mavenInstaller &#123;</span><br><span class="line">        <span class="comment">// This generates POM.xml with proper parameters</span></span><br><span class="line">        pom &#123;</span><br><span class="line">            project &#123;</span><br><span class="line">                packaging <span class="string">'jar'</span></span><br><span class="line">                name <span class="string">'RxBus'</span></span><br><span class="line">                url siteUrl</span><br><span class="line">                licenses &#123;</span><br><span class="line">                    license &#123;</span><br><span class="line">                        name <span class="string">'The Apache Software License, Version 2.0'</span></span><br><span class="line">                        url <span class="string">'http://www.apache.org/licenses/LICENSE-2.0.txt'</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                developers &#123;</span><br><span class="line">                    developer &#123;</span><br><span class="line">                        id <span class="string">'rxbus'</span></span><br><span class="line">                        name <span class="string">'com.kw.rxbus'</span></span><br><span class="line">                        email <span class="string">'kuwork@126.com'</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                scm &#123;</span><br><span class="line">                    connection gitUrl</span><br><span class="line">                    developerConnection gitUrl</span><br><span class="line">                    url siteUrl</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>6.打包javadocjar和sourcejar<br>这两个也是上传到jcenter必须要的。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">task sourcesJar(<span class="string">type:</span> Jar) &#123;</span><br><span class="line">    from android.sourceSets.main.java.srcDirs</span><br><span class="line">    classifier = <span class="string">'sources'</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">task javadoc(<span class="string">type:</span> Javadoc) &#123;</span><br><span class="line">    source = android.sourceSets.main.java.srcDirs</span><br><span class="line">    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">task javadocJar(<span class="string">type:</span> Jar, <span class="string">dependsOn:</span> javadoc) &#123;</span><br><span class="line">    classifier = <span class="string">'javadoc'</span></span><br><span class="line">    from javadoc.destinationDir</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">artifacts &#123;</span><br><span class="line">    archives javadocJar</span><br><span class="line">    archives sourcesJar</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>7.上传到Jcenter仓库<br>上传到jcenter的网站BinTray，需要用户验证，需要2个值：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 示例值， 仅供参考</span></span><br><span class="line">bintray.user=用户名 <span class="comment">// your bintray user </span></span><br><span class="line">namebintray.apikey=******** <span class="comment">// your bintray api key</span></span><br></pre></td></tr></table></figure>
+<p>第二个API Key就是你在上面记录的API Key。因为这个属于个人隐私，一般不能传到网上去，所以需要在记录到LessCode下的local.properties中(利用gitignore忽略这个文件到git)，然后脚本再从local.properties中读取这两个值。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Properties properties = <span class="keyword">new</span> Properties()</span><br><span class="line"><span class="keyword">boolean</span> isHasFile = <span class="literal">false</span></span><br><span class="line"><span class="keyword">if</span> (project.rootProject.file(<span class="string">'local.properties'</span>) != <span class="literal">null</span>)&#123;</span><br><span class="line">    isHasFile = <span class="literal">true</span></span><br><span class="line">    properties.load(project.rootProject.file(<span class="string">'local.properties'</span>).newDataInputStream())</span><br><span class="line">&#125;</span><br><span class="line">bintray &#123;</span><br><span class="line">    user = isHasFile ? properties.getProperty("bintray.user") : System.getenv(<span class="string">"bintray.user"</span>)</span><br><span class="line">    key = isHasFile ? properties.getProperty("bintray.apikey") : System.getenv(<span class="string">"bintray.apikey"</span>)</span><br><span class="line">    configurations = [<span class="string">'archives'</span>]</span><br><span class="line">    pkg &#123;</span><br><span class="line">        repo = <span class="string">"maven"</span></span><br><span class="line">        name = <span class="string">"rxbus"</span> <span class="comment">//项目名称</span></span><br><span class="line">        websiteUrl = siteUrl</span><br><span class="line">        vcsUrl = gitUrl</span><br><span class="line">        licenses = [<span class="string">"Apache-2.0"</span>]</span><br><span class="line">        publish = <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>完整的build.gradle,请参考<a href="https://github.com/kuwork/rxbus/blob/master/rxbus/build.gradle" target="_blank" rel="noopener">rxbus/build.gradle</a>。</p>
+<p>8.执行<br>根据上面的build.gradle,会产生几个特别的gradle任务：<br>通过gradlew执行这些任务即可。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">gradlew javadocJar</span><br><span class="line">gradlew sourcesJar</span><br><span class="line">gradlew install</span><br><span class="line">gradlew bintrayUpload</span><br></pre></td></tr></table></figure>
+<p><strong> PS </strong></p>
+<ul>
+<li>如果上传的版本号一样，在执行gradlew bintrayUpload时失败</li>
+</ul>
+<p>或者通过Android Studio的最右边栏的Gradle窗口分别可视化操作，点击执行：<img src="http://upload-images.jianshu.io/upload_images/3020228-ad3f1489a142efa0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>9.请求审核<br>当bintrayUpload成功之后，<br>在我的主页<strong><a href="https://bintray.com/你的用户名/maven" target="_blank" rel="noopener">https://bintray.com/你的用户名/maven</a></strong> 会看到你提交了一个项目：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-d6456765a5b70002.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>点击项目名称，进入详情页，右下角找到<br><img src="http://upload-images.jianshu.io/upload_images/3020228-1559f9a41f5d4ae0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>鼠标放上去它会提示你去提交审核，点击进入后，随便写什么都可以了。<br>只要上面没问题，一般审核很快，几个小时就差不多了。</p>
+<p><strong>PS</strong></p>
+<ul>
+<li>如果你开始像我一样没注意就注册了一个企业账号。那样就看不到这个按钮了。</li>
+<li>即使看到按钮也未必能跳转（一开始我使用bintray-release，可以上传成功，无法提交Jcenter，点击会出现POM.xml缺失提示）。</li>
+</ul>
+<p>小结<br>相对于android源码或者jar包的形式，开发者可能更乐意以这种方式开源自己的android框架或者组件。<br>对于使用者来说，引用方式更简单了<br>对于开发者开说，能够被中心仓库接受，是一种认可。</p>
+<p>更多参考，请查看<a href="https://github.com/kuwork/rxbus" target="_blank" rel="noopener">基于Rxjava2+RxDelay 的RxBus</a>。</p>
+<h4 id="目的-1"><a href="#目的-1" class="headerlink" title="目的"></a>目的</h4><p>发布自己的android library（也就是aar/jar）到公共的jcenter仓库，所有的人都能用gradle最简单的方式引用。为什么选择jcenter，它兼容maven，而且支持更多形式仓库，android studio最新版本已经默认jcenter了。</p>
+<h4 id="环境-1"><a href="#环境-1" class="headerlink" title="环境"></a>环境</h4><p>Android Studio 2.2.2</p>
+<h4 id="参考文章-1"><a href="#参考文章-1" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="http://www.cnblogs.com/qianxudetianxia/p/4322331.html" target="_blank" rel="noopener">使用Gradle发布Android开源项目到JCenter</a></p>
+<p>在这个基础上，修正一些导入库问题。</p>
+<h2 id="一、注册账号-1"><a href="#一、注册账号-1" class="headerlink" title="一、注册账号"></a>一、注册账号</h2><p>在<a href="https://bintray.com/signup/oss上注册一个账号。我是以github账号直接登陆的。" target="_blank" rel="noopener">https://bintray.com/signup/oss上注册一个账号。我是以github账号直接登陆的。</a><br><strong>注意看上面的地址，直接使用，首页那个按钮是坑货。</strong></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-157100f9d3c13514.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="首页企业注册按钮"></p>
+<p><strong>这才是真的个人注册页面！</strong><br><img src="http://upload-images.jianshu.io/upload_images/3020228-d73943d910d78ece.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="个人注册页面"></p>
+<h2 id="二、记录API-Key-1"><a href="#二、记录API-Key-1" class="headerlink" title="二、记录API Key"></a>二、记录API Key</h2><p>注册后，在<a href="https://bintray.com/profile/edit页面的左边菜单的最下面有API" target="_blank" rel="noopener">https://bintray.com/profile/edit页面的左边菜单的最下面有API</a> Key，点击后：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-9e1532e71cc32d0d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>复制明文API key，后面会用到。</p>
+<p>然后创建一个Maven仓库。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-4be6bee8028159df.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>注意名称必须是maven。类型当然也是Maven。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-4f3fa25e89f5516b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h2 id="三、新建项目（以RxBus为例）-1"><a href="#三、新建项目（以RxBus为例）-1" class="headerlink" title="三、新建项目（以RxBus为例）"></a>三、新建项目（以RxBus为例）</h2><p>在Android Studio中New一个Project。完成之后在RxBus的根目录下会有一个build.gradle,在buildscript/dependencies中添加两个classpath：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">classpath <span class="string">'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'</span></span><br><span class="line">classpath <span class="string">'com.github.dcendents:android-maven-gradle-plugin:1.5'</span></span><br></pre></td></tr></table></figure>
+<p>这里注意 <strong>版本太旧，会报错</strong>。</p>
+<p>这是两个帮助发布项目的插件，完整的project build.gradle请查看<a href="https://github.com/kuwork/rxbus/blob/master/build.gradle#L9L10" target="_blank" rel="noopener">这里</a>。</p>
+<h2 id="四、新建模块-1"><a href="#四、新建模块-1" class="headerlink" title="四、新建模块"></a>四、新建模块</h2><p>在当前Project中New一个Module，比如我这里叫rxbus，是一个完整的Android Library，就可以以aar/jar的形式发布了。完成之后在rxbus下也会有一个build.gradle，这个build.gradle是今天的重中之重。</p>
+<h2 id="五、构建build-gradle-1"><a href="#五、构建build-gradle-1" class="headerlink" title="五、构建build.gradle"></a>五、构建build.gradle</h2><p>默认的build.gradle大概是这样的：<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">apply <span class="string">plugin:</span> <span class="string">'com.android.library'</span></span><br><span class="line"></span><br><span class="line">android &#123;</span><br><span class="line">    compileSdkVersion <span class="number">25</span></span><br><span class="line">    buildToolsVersion <span class="string">"25.0.2"</span></span><br><span class="line"></span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">        minSdkVersion <span class="number">9</span></span><br><span class="line">        targetSdkVersion <span class="number">25</span></span><br><span class="line">        versionCode <span class="number">1</span></span><br><span class="line">        versionName version</span><br><span class="line">    &#125;</span><br><span class="line">    buildTypes &#123;</span><br><span class="line">        release &#123;</span><br><span class="line">            minifyEnabled <span class="literal">false</span></span><br><span class="line">            proguardFiles getDefaultProguardFile(<span class="string">'proguard-android.txt'</span>), <span class="string">'proguard-rules.pro'</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    compile fileTree(<span class="string">dir:</span> <span class="string">'libs'</span>, <span class="string">include:</span> [<span class="string">'*.jar'</span>])</span><br><span class="line">    androidTestCompile(<span class="string">'com.android.support.test.espresso:espresso-core:2.2.2'</span>, &#123;</span><br><span class="line">        exclude <span class="string">group:</span> <span class="string">'com.android.support'</span>, <span class="string">module:</span> <span class="string">'support-annotations'</span></span><br><span class="line">    &#125;)</span><br><span class="line">    testCompile <span class="string">'junit:junit:4.12'</span></span><br><span class="line">    compile <span class="string">'com.jakewharton.rxrelay2:rxrelay:2.0.0'</span></span><br><span class="line">    provided <span class="string">'io.reactivex.rxjava2:rxjava:2.0.1'</span></span><br><span class="line">    provided <span class="string">'io.reactivex.rxjava2:rxandroid:2.0.1'</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>下面我们一步步修改补充这个build.gradle</p>
+<ol>
+<li><p>添加插件</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apply <span class="string">plugin:</span> <span class="string">'com.github.dcendents.android-maven'</span></span><br><span class="line">apply <span class="string">plugin:</span> <span class="string">'com.jfrog.bintray'</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>定义版本</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">version = <span class="string">"0.1"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>定义相关网站<br>有单独的官方网站那是最好的，没用的话就用git网址就可以了。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> siteUrl = <span class="string">'https://github.com/kuwork/rxbus'</span> <span class="comment">// project homepage</span></span><br><span class="line"><span class="keyword">def</span> gitUrl = <span class="string">'https://github.com/kuwork/rxbus.git'</span> <span class="comment">// project git</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>定义Group<br>举个例子，当我们引用recylerview的时候是这样的：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compile <span class="string">'com.android.support:recyclerview-v7:21.0.2'</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>引号内字符串以”:”分割为三部分，第一部分就是group，第二部分是name， 第三部分是上面定义的version。<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 根节点添加group = "com.kw"</span></span><br></pre></td></tr></table></figure></p>
+<ol start="5">
+<li><p>定义pom并打包aar/jar<br>上传到jcenter至少需要四个文件，除了打包的aar之外，还需要pom和javadoc，source，否则是通不过jcenter审核的。不过不用紧张，这些我们都可以用脚本生成。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">install &#123;</span><br><span class="line">    repositories.mavenInstaller &#123;</span><br><span class="line">        <span class="comment">// This generates POM.xml with proper parameters</span></span><br><span class="line">        pom &#123;</span><br><span class="line">            project &#123;</span><br><span class="line">                packaging <span class="string">'jar'</span></span><br><span class="line">                name <span class="string">'RxBus'</span></span><br><span class="line">                url siteUrl</span><br><span class="line">                licenses &#123;</span><br><span class="line">                    license &#123;</span><br><span class="line">                        name <span class="string">'The Apache Software License, Version 2.0'</span></span><br><span class="line">                        url <span class="string">'http://www.apache.org/licenses/LICENSE-2.0.txt'</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                developers &#123;</span><br><span class="line">                    developer &#123;</span><br><span class="line">                        id <span class="string">'rxbus'</span></span><br><span class="line">                        name <span class="string">'com.kw.rxbus'</span></span><br><span class="line">                        email <span class="string">'kuwork@126.com'</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                scm &#123;</span><br><span class="line">                    connection gitUrl</span><br><span class="line">                    developerConnection gitUrl</span><br><span class="line">                    url siteUrl</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>打包javadocjar和sourcejar<br>这两个也是上传到jcenter必须要的。</p>
+</li>
+</ol>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">task sourcesJar(<span class="string">type:</span> Jar) &#123;</span><br><span class="line">    from android.sourceSets.main.java.srcDirs</span><br><span class="line">    classifier = <span class="string">'sources'</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">task javadoc(<span class="string">type:</span> Javadoc) &#123;</span><br><span class="line">    source = android.sourceSets.main.java.srcDirs</span><br><span class="line">    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">task javadocJar(<span class="string">type:</span> Jar, <span class="string">dependsOn:</span> javadoc) &#123;</span><br><span class="line">    classifier = <span class="string">'javadoc'</span></span><br><span class="line">    from javadoc.destinationDir</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">artifacts &#123;</span><br><span class="line">    archives javadocJar</span><br><span class="line">    archives sourcesJar</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>7.上传到Jcenter仓库<br>上传到jcenter的网站BinTray，需要用户验证，需要2个值：<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 示例值， 仅供参考</span></span><br><span class="line">bintray.user=用户名 <span class="comment">// your bintray user </span></span><br><span class="line">namebintray.apikey=******** <span class="comment">// your bintray api key</span></span><br></pre></td></tr></table></figure></p>
+<p>第二个API Key就是你在上面记录的API Key。因为这个属于个人隐私，一般不能传到网上去，所以需要在记录到LessCode下的local.properties中(利用gitignore忽略这个文件到git)，然后脚本再从local.properties中读取这两个值。<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Properties properties = <span class="keyword">new</span> Properties()</span><br><span class="line"><span class="keyword">boolean</span> isHasFile = <span class="literal">false</span></span><br><span class="line"><span class="keyword">if</span> (project.rootProject.file(<span class="string">'local.properties'</span>) != <span class="literal">null</span>)&#123;</span><br><span class="line">    isHasFile = <span class="literal">true</span></span><br><span class="line">    properties.load(project.rootProject.file(<span class="string">'local.properties'</span>).newDataInputStream())</span><br><span class="line">&#125;</span><br><span class="line">bintray &#123;</span><br><span class="line">    user = isHasFile ? properties.getProperty("bintray.user") : System.getenv(<span class="string">"bintray.user"</span>)</span><br><span class="line">    key = isHasFile ? properties.getProperty("bintray.apikey") : System.getenv(<span class="string">"bintray.apikey"</span>)</span><br><span class="line">    configurations = [<span class="string">'archives'</span>]</span><br><span class="line">    pkg &#123;</span><br><span class="line">        repo = <span class="string">"maven"</span></span><br><span class="line">        name = <span class="string">"rxbus"</span> <span class="comment">//项目名称</span></span><br><span class="line">        websiteUrl = siteUrl</span><br><span class="line">        vcsUrl = gitUrl</span><br><span class="line">        licenses = [<span class="string">"Apache-2.0"</span>]</span><br><span class="line">        publish = <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>完整的build.gradle,请参考<a href="https://github.com/kuwork/rxbus/blob/master/rxbus/build.gradle" target="_blank" rel="noopener">rxbus/build.gradle</a>。</p>
+<p>8.执行<br>根据上面的build.gradle,会产生几个特别的gradle任务：<br>通过gradlew执行这些任务即可。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">gradlew javadocJar</span><br><span class="line">gradlew sourcesJar</span><br><span class="line">gradlew install</span><br><span class="line">gradlew bintrayUpload</span><br></pre></td></tr></table></figure></p>
+<p><strong> PS </strong></p>
+<ul>
+<li>如果上传的版本号一样，在执行gradlew bintrayUpload时失败</li>
+</ul>
+<p>或者通过Android Studio的最右边栏的Gradle窗口分别可视化操作，点击执行：<img src="http://upload-images.jianshu.io/upload_images/3020228-ad3f1489a142efa0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>9.请求审核<br>当bintrayUpload成功之后，<br>在我的主页<strong><a href="https://bintray.com/你的用户名/maven" target="_blank" rel="noopener">https://bintray.com/你的用户名/maven</a></strong> 会看到你提交了一个项目：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3020228-d6456765a5b70002.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>点击项目名称，进入详情页，右下角找到<br><img src="http://upload-images.jianshu.io/upload_images/3020228-1559f9a41f5d4ae0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>鼠标放上去它会提示你去提交审核，点击进入后，随便写什么都可以了。<br>只要上面没问题，一般审核很快，几个小时就差不多了。</p>
+<p><strong>PS</strong></p>
+<ul>
+<li>如果你开始像我一样没注意就注册了一个企业账号。那样就看不到这个按钮了。</li>
+<li>即使看到按钮也未必能跳转（一开始我使用bintray-release，可以上传成功，无法提交Jcenter，点击会出现POM.xml缺失提示）。</li>
+</ul>
+<p>小结<br>相对于android源码或者jar包的形式，开发者可能更乐意以这种方式开源自己的android框架或者组件。<br>对于使用者来说，引用方式更简单了<br>对于开发者开说，能够被中心仓库接受，是一种认可。</p>
+<p>更多参考，请查看<a href="https://github.com/kuwork/rxbus" target="_blank" rel="noopener">基于Rxjava2+RxDelay 的RxBus</a>。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/Gradle发布/" rel="tag"># Gradle发布</a>
+          
+            <a href="/tags/JCenter/" rel="tag"># JCenter</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/18/基于-RxJava-2-和-RxRelay-实现-RxBus/" rel="next" title="基于 RxJava 2 和 RxRelay 实现 RxBus">
+                <i class="fa fa-chevron-left"></i> 基于 RxJava 2 和 RxRelay 实现 RxBus
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/27/Android-Small-官方使用指南/" rel="prev" title="Android Small 官方使用指南">
+                Android Small 官方使用指南 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="Kuwork" />
+          <p class="site-author-name" itemprop="name">Kuwork</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#目的"><span class="nav-number">1.</span> <span class="nav-text">目的</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#环境"><span class="nav-number">2.</span> <span class="nav-text">环境</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文章"><span class="nav-number">3.</span> <span class="nav-text">参考文章</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一、注册账号"><span class="nav-number"></span> <span class="nav-text">一、注册账号</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、记录API-Key"><span class="nav-number"></span> <span class="nav-text">二、记录API Key</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、新建项目（以RxBus为例）"><span class="nav-number"></span> <span class="nav-text">三、新建项目（以RxBus为例）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、新建模块"><span class="nav-number"></span> <span class="nav-text">四、新建模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、构建build-gradle"><span class="nav-number"></span> <span class="nav-text">五、构建build.gradle</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#目的-1"><span class="nav-number">1.</span> <span class="nav-text">目的</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#环境-1"><span class="nav-number">2.</span> <span class="nav-text">环境</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文章-1"><span class="nav-number">3.</span> <span class="nav-text">参考文章</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一、注册账号-1"><span class="nav-number"></span> <span class="nav-text">一、注册账号</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、记录API-Key-1"><span class="nav-number"></span> <span class="nav-text">二、记录API Key</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、新建项目（以RxBus为例）-1"><span class="nav-number"></span> <span class="nav-text">三、新建项目（以RxBus为例）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、新建模块-1"><span class="nav-number"></span> <span class="nav-text">四、新建模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、构建build-gradle-1"><span class="nav-number"></span> <span class="nav-text">五、构建build.gradle</span></a></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kuwork</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
