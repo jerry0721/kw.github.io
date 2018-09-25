@@ -859,11 +859,30 @@
 <tbody>
 <tr>
 <td>arm</td>
-<td>–toolchain=arm-linux-androideabi-4.8<br></td>
+<td>–toolchain=arm-linux-androideabi-4.8<br>–toolchain=arm-linux-androideabi-4.9<br>–toolchain=arm-linux-android-clang3.5<br>–toolchain=arm-linux-android-clang3.6<br></td>
+</tr>
+<tr>
+<td>x86</td>
+<td>–toolchain=x86-linux-android-4.8<br>–toolchain=x86-linux-android-4.9<br>–toolchain=x86-linux-android-clang3.5<br>–toolchain=x86-linux-android-clang3.6<br></td>
+</tr>
+<tr>
+<td>mips</td>
+<td>–toolchain=mips-linux-android-4.8<br>–toolchain=mips-linux-android-4.9<br>–toolchain=mips-linux-android-clang3.5<br>–toolchain=mips-linux-android-clang3.6<br></td>
+</tr>
+<tr>
+<td>arm64</td>
+<td>–toolchain=aarch64-linux-android-4.9<br>–toolchain=aarch64-linux-android-clang3.5<br>–toolchain=aarch64-linux-android-clang3.6<br></td>
+</tr>
+<tr>
+<td>x86_64</td>
+<td>–toolchain=x86_64-linux-android-4.9<br>–toolchain=x86_64-linux-android-clang3.5<br>–toolchain=x86_64-linux-android-clang3.6<br></td>
+</tr>
+<tr>
+<td>mips64</td>
+<td>–toolchain=mips64el-linux-android-4.9<br>–toolchain=mips64el-linux-android-clang3.5<br>–toolchain=mips64el-linux-android-clang3.6<br></td>
 </tr>
 </tbody>
 </table>
-<p>–toolchain=arm-linux-androideabi-4.9<br><br>–toolchain=arm-linux-android-clang3.5<br><br>–toolchain=arm-linux-android-clang3.6<br><br>x86 | –toolchain=x86-linux-android-4.8<br><br>–toolchain=x86-linux-android-4.9<br><br>–toolchain=x86-linux-android-clang3.5<br><br>–toolchain=x86-linux-android-clang3.6<br><br>mips | –toolchain=mips-linux-android-4.8<br><br>–toolchain=mips-linux-android-4.9<br><br>–toolchain=mips-linux-android-clang3.5<br><br>–toolchain=mips-linux-android-clang3.6<br><br>arm64 | –toolchain=aarch64-linux-android-4.9<br><br>–toolchain=aarch64-linux-android-clang3.5<br><br>–toolchain=aarch64-linux-android-clang3.6<br><br>x86_64 | –toolchain=x86_64-linux-android-4.9<br><br>–toolchain=x86_64-linux-android-clang3.5<br><br>–toolchain=x86_64-linux-android-clang3.6<br><br>mips64 | –toolchain=mips64el-linux-android-4.9<br><br>–toolchain=mips64el-linux-android-clang3.5<br><br>–toolchain=mips64el-linux-android-clang3.6<br></p>
 <p>注：表 4 并不是一个详尽的列表。其他组合可能也有效，但未经验证。</p>
 <p>您可以指定 –stl=stlport 以复制 libstlport，而不是使用默认的 libgnustl。 如果您执行此操作并想链接共享库，则必须以显式方式使用 -lstlport_shared。 此要求与必须为 GNU libstdc++ 使用 -lgnustl_shared 相似。</p>
 <p>同样，您可以指定 –stl=libc++ 复制 LLVM libc++ 标头和库。如需链接共享库，您必须以显式方式使用 -lc++_shared。</p>
